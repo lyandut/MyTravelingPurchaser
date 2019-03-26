@@ -13,5 +13,45 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
+    <Filter Include="TPPLIBInstance">
+      <UniqueIdentifier>{82380316-0edf-4746-93a4-02bf5a436197}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Solver">
+      <UniqueIdentifier>{ea0f3b60-7df8-4b5c-af34-0bb399753a01}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Solver\Source Files">
+      <UniqueIdentifier>{23cdbe14-9f7e-4bc2-b90b-266fd49105a1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Solver\Header Files">
+      <UniqueIdentifier>{cc201a03-f435-461c-b444-21b5dda39b76}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="TPPLIBInstance\Header Files">
+      <UniqueIdentifier>{be6ef144-962a-4007-a8ab-8913a44688d9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="TPPLIBInstance\Source Files">
+      <UniqueIdentifier>{dfe63761-a364-4a6c-a49c-994804665ac4}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="MyTravelingPurchaser.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="instance_access.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="TPPLIBInstance.h">
+      <Filter>TPPLIBInstance\Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="MyTravelingPurchaser.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="TPPLIBInstance.cpp">
+      <Filter>TPPLIBInstance\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="main.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

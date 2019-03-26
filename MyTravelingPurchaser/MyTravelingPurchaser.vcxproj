@@ -146,6 +146,14 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="instance_access.h" />
+    <ClInclude Include="MyTravelingPurchaser.h" />
+    <ClInclude Include="TPPLIBInstance.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="main.cpp" />
+    <ClCompile Include="MyTravelingPurchaser.cpp" />
+    <ClCompile Include="TPPLIBInstance.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

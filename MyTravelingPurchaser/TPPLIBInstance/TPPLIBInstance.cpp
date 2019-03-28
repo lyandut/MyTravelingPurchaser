@@ -146,21 +146,21 @@ TPPLIBInstance * TPPLIBInstanceBuilder::buildFromFile(std::string filename) {
 			}
 		}
 		else if (keyword == "OFFER_SECTION") {
+			int demand_num = instance->demands.size();
 			int n = instance->dimension;
-			instance->offer_lists = std::vector<NodeOfferList>(n);
+			instance->offer_lists = std::vector<std::vector<PriAva>>(n);
 			for (int i = 0; i < n; i++) {
-				NodeOfferList currNodeOffer;
+				int node_index, offer_num;
 				std::getline(file, line);
 				std::stringstream str_stream_offer(line);
-				int node_index, offer_num;
 				str_stream_offer >> node_index >> offer_num;
-				currNodeOffer.offerNum = offer_num;
+				std::vector<PriAva> currNodeOffer(demand_num, std::make_pair(-1, 0));
 				for (int j = 0; j < offer_num; j++) {
 					int offId, offPrice, offAvailability;
 					str_stream_offer >> offId >> offPrice >> offAvailability;
-					// [TODO: test]
-					currNodeOffer.offerTuple.push_back(std::make_tuple(offId, offPrice, offAvailability));
-					//currNodeOffer.offerTuple.emplace_back(offId, offPrice, offAvailability);
+					currNodeOffer[offId - 1].first = offPrice;
+					currNodeOffer[offId - 1].second = offAvailability;
+					instance->offer_lists[node_index - 1] = currNodeOffer;
 				}
 			}
 		}

@@ -4,23 +4,24 @@
 #include <string>
 #include <map>
 #include "./CAHSolver.h"
-#include "../TPPLIBInstance/TPPLIBInstance.h"
 
 
 class SolverDispatcher {
 public:
 	static void dispatch(std::string filename, std::vector<std::string> methods) {
 		auto instance = TPPLIBInstanceBuilder::buildFromFile(filename);
-		printChecker(instance);
 
+		auto construction_method = methods.at(0);
+		Solutions *solutions = nullptr;
 
-		//auto construction_method = methods.at(0);
-		//Solutions *solutions = nullptr;
-
-		//if (construction_method == "CAH") {
-		//	CAHSolver cah_sol = CAHSolver();
-		//	solutions = cah_sol.construct(instance->distance_matrix, instance->dimension);
-		//}
+		if (construction_method == "CAH") {
+			CAHSolver cah_sol = CAHSolver();
+			solutions = cah_sol.construct(
+				instance->dimension,
+				instance->demands,
+				instance->offer_lists,
+				instance->distance_matrix);
+		}
 
 		//unsigned long method_size = methods.size();
 
@@ -42,7 +43,6 @@ public:
 		using std::cout; 
 		using std::endl;
 		cout << instance->name << endl;
-		cout << instance->comment << endl;
 		cout << instance->dimension << endl;
 		cout << instance->demands.size() << endl;
 		cout << instance->distance_matrix.size() << endl;

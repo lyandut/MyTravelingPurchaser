@@ -2,7 +2,6 @@
 #include <iostream>
 #include <vector>
 #include <string>
-#include <tuple>
 #include <algorithm>
 #include <fstream>
 #include <sstream>
@@ -10,12 +9,7 @@
 #include <cctype>
 #include <cmath>
 
-typedef std::tuple<int, int, int> IdPriAva;
-
-typedef struct {
-	int offerNum;
-	std::vector<IdPriAva> offerTuple;
-}NodeOfferList;
+typedef std::pair<int, int> PriAva;
 
 class TPPLIBInstance
 {
@@ -24,18 +18,23 @@ public:
 	std::string comment;
 	std::string instance_type;
 	std::string edge_weight_type;
-	std::string edge_weight_format;
+	std::string edge_weight_format; /* 默认完全图: COMPLETE */
 	std::string edge_data_format;
 	std::string node_coord_type;
 	std::string display_data_type;
 
+	/* 参与算法求解 */
 	unsigned int dimension;
 	std::vector<int> demands;
-	std::vector<NodeOfferList> offer_lists;
+	std::vector<std::vector<PriAva>> offer_lists;
+	std::vector<std::vector<int>> distance_matrix;
+
+	/* 非完全图中描述边的连接关系 */
 	std::vector<std::pair<int, int>> edge_list;
+	/* 点坐标，根据距离函数求路由开销存入 distance_matrix */
 	std::vector<std::vector<double>> coordinates;
 	std::vector<std::vector<double>> display_coordinates;
-	std::vector<std::vector<int>> distance_matrix;
+	
 
 	TPPLIBInstance(){
 		name = "not specified";
@@ -49,11 +48,11 @@ public:
 
 		dimension = 0;
 		demands = std::vector<int>();
-		offer_lists = std::vector<NodeOfferList>();
+		offer_lists = std::vector<std::vector<PriAva>>();
+		distance_matrix = std::vector<std::vector<int>>();
 		edge_list = std::vector<std::pair<int, int>>();
 		coordinates = std::vector<std::vector<double>>();
 		display_coordinates = std::vector<std::vector<double>>();
-		distance_matrix = std::vector<std::vector<int>>();
 	}
 	
 	~TPPLIBInstance() {}

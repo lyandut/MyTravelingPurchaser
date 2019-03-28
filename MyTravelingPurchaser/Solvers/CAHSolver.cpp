@@ -1,48 +1,40 @@
 #include "CAHSolver.h"
 
-Solutions * CAHSolver::construct(std::vector<std::vector<int>> distance_matrix, unsigned int n)
-{
-	int *travelled = new int[n];
-	for (int i = 1; i < n; ++i)
-		travelled[i] = 0;
-	travelled[0] = 1;
+Solutions * CAHSolver::construct(
+	unsigned int dimension,
+	std::vector<int> demands,
+	std::vector<std::vector<PriAva>> offer_lists,
+	std::vector<std::vector<int>> distance_matrix
+) {
+	std::vector<int> isTravelled(dimension, 0);
+	isTravelled[0] = 1;
 
 	auto tour = std::vector<unsigned int>();
 	tour.emplace_back(0);
 
-	int total = 1;
-	int objective = 0;
-	int node = 0;
-	int min_index = -1;
-	while (total < n) {
-		int min = -1;
-		min_index = -1;
-		for (int i = 0; i < n; ++i) {
-			if (i == node || travelled[i] == 1)continue;
-			if (min == -1) {
-				min = distance_matrix[node][i];
-				min_index = i;
-			}
-			else if (min > distance_matrix[node][i]) {
-				min = distance_matrix[node][i];
-				min_index = i;
-			}
+	/* Initialization */
+	// [TODO] demands 随机排序
+	int h = 0;  // 产品编号 -> 需求量: demands[h]
+	int currNode = 0;
+
+	/* First units of product 1 */
+	double minCost = -1.0;
+	for (int i = 0; i < dimension; i++) {
+		if (currNode == i || isTravelled[i]) continue;
+		double currCost = 2.0*distance_matrix[currNode][i] / (double)offer_lists[i][h].second + (double)offer_lists[i][h].first;
+		if (currCost < minCost || minCost == -1.0) {
+			minCost = currCost;
+			currNode = i;
 		}
-		objective += distance_matrix[node][min_index];
-		tour.emplace_back(min_index);
-		node = min_index;
-		total++;
-		travelled[node] = 1;
 	}
+	tour.emplace_back(currNode);
+	isTravelled[currNode] = 1;
 
-	objective += distance_matrix[min_index][0];
-
-	Solution sol = Solution();
-
-	sol.first = tour;
-	sol.second = objective;
-
+	/* Remaining units of product 1 */
+	/* pass when demands[h]=1 */
+	
+	
+	/* return */
 	auto *result = new Solutions();
-	result->emplace_back(sol);
 	return result;
 }

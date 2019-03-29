@@ -8,6 +8,7 @@ int main() {
 	srand(time(NULL));
 
 	std::string instanceName = "Singh33_2.33.50.1.5.tpp";
+	//std::string instanceName = "PearnChien.10.50.1.tpp";
 	std::string file = FOLDER + instanceName;
 	auto methods = std::vector<std::string>();
 	methods.push_back("CAH");

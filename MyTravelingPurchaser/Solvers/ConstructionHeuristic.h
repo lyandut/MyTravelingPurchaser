@@ -9,8 +9,8 @@ class ConstructionHeuristic {
 public:
 	virtual Solutions * construct(
 		unsigned int dimension,
-		std::vector<int> demands,
-		std::vector<std::vector<PriAva>> offer_lists,
-		std::vector<std::vector<int>> distance_matrix
+		const std::vector<int> &demands,
+		const std::vector<std::vector<PriAva>> &offer_lists,
+		const std::vector<std::vector<int>> &distance_matrix
 	) = 0;
 };

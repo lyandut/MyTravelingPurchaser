@@ -45,6 +45,9 @@
     <ClInclude Include="TPPLIBInstance\TPPLIBInstance.h">
       <Filter>TPPLIBInstance</Filter>
     </ClInclude>
+    <ClInclude Include="Solvers\ImprovementHeuristic.h">
+      <Filter>Solvers\Common Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="MyTravelingPurchaser.cpp">

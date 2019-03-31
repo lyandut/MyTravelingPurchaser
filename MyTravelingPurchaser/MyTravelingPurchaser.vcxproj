@@ -150,6 +150,7 @@
     <ClInclude Include="MyTravelingPurchaser.h" />
     <ClInclude Include="Solvers\CAHSolver.h" />
     <ClInclude Include="Solvers\ConstructionHeuristic.h" />
+    <ClInclude Include="Solvers\ImprovementHeuristic.h" />
     <ClInclude Include="Solvers\SolverDispatcher.h" />
     <ClInclude Include="TPPLIBInstance\TPPLIBInstance.h" />
   </ItemGroup>

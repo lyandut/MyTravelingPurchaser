@@ -4,7 +4,7 @@
 
 class CAHSolver : public ConstructionHeuristic {
 public:
-	Solutions * construct(
+	Solutions construct(
 		unsigned int dimension, 
 		const std::vector<int>& demands, 
 		const std::vector<std::vector<PriAva>>& offer_lists, 

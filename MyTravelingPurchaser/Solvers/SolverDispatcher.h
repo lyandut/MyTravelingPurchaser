@@ -12,7 +12,7 @@ public:
 		auto instance = TPPLIBInstanceBuilder::buildFromFile(filename);
 
 		auto construction_method = methods.at(0);
-		Solutions *solutions = nullptr;
+		Solutions solutions;
 
 		if (construction_method == "CAH") {
 			CAHSolver cah_sol = CAHSolver();
@@ -20,7 +20,8 @@ public:
 				instance->dimension,
 				instance->demands,
 				instance->offer_lists,
-				instance->distance_matrix);
+				instance->distance_matrix
+			);
 		}
 
 		//unsigned long method_size = methods.size();

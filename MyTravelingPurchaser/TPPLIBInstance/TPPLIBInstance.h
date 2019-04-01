@@ -1,6 +1,4 @@
 #pragma once
-#include <iostream>
-#include <vector>
 #include <string>
 #include <algorithm>
 #include <fstream>
@@ -8,8 +6,9 @@
 #include <functional>
 #include <cctype>
 #include <cmath>
+#include "../common.h"
 
-typedef std::pair<int, int> PriAva;
+
 
 class TPPLIBInstance
 {
@@ -26,7 +25,8 @@ public:
 	/* 参与算法求解 */
 	unsigned int dimension;
 	std::vector<int> demands;
-	std::vector<std::vector<PriAva>> offer_lists;
+	std::vector<std::vector<PriQua>> offer_lists;
+	std::vector<std::vector<NodePriQua>> offer_sort_lists;
 	std::vector<std::vector<int>> distance_matrix;
 
 	/* 非完全图中描述边的连接关系 */
@@ -48,7 +48,8 @@ public:
 
 		dimension = 0;
 		demands = std::vector<int>();
-		offer_lists = std::vector<std::vector<PriAva>>();
+		offer_lists = std::vector<std::vector<PriQua>>();
+		offer_sort_lists = std::vector<std::vector<NodePriQua>>();
 		distance_matrix = std::vector<std::vector<int>>();
 		edge_list = std::vector<std::pair<int, int>>();
 		coordinates = std::vector<std::vector<double>>();

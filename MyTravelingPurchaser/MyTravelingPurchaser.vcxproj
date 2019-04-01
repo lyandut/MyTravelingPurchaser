@@ -146,18 +146,18 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="instance_access.h" />
-    <ClInclude Include="MyTravelingPurchaser.h" />
-    <ClInclude Include="Solvers\CAHSolver.h" />
+    <ClInclude Include="common.h" />
+    <ClInclude Include="Solvers\Improvements\CAHImprovement.h" />
+    <ClInclude Include="Solvers\CAHSolver\CAHSolver.h" />
     <ClInclude Include="Solvers\ConstructionHeuristic.h" />
     <ClInclude Include="Solvers\ImprovementHeuristic.h" />
     <ClInclude Include="Solvers\SolverDispatcher.h" />
     <ClInclude Include="TPPLIBInstance\TPPLIBInstance.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Solvers\Improvements\CAHImprovement.cpp" />
     <ClCompile Include="main.cpp" />
-    <ClCompile Include="MyTravelingPurchaser.cpp" />
-    <ClCompile Include="Solvers\CAHSolver.cpp" />
+    <ClCompile Include="Solvers\CAHSolver\CAHSolver.cpp" />
     <ClCompile Include="TPPLIBInstance\TPPLIBInstance.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

@@ -148,7 +148,8 @@ TPPLIBInstance * TPPLIBInstanceBuilder::buildFromFile(std::string filename) {
 		else if (keyword == "OFFER_SECTION") {
 			int demand_num = instance->demands.size();
 			int n = instance->dimension;
-			instance->offer_lists = std::vector<std::vector<PriAva>>(n, std::vector<PriAva>(demand_num, std::make_pair(-1, 0)));
+			instance->offer_lists = std::vector<std::vector<PriQua>>(n, std::vector<PriQua>(demand_num, std::make_pair(-1, 0)));
+			instance->offer_sort_lists = std::vector<std::vector<NodePriQua>>(demand_num);
 			for (int i = 0; i < n; i++) {
 				int node_index, offer_num;
 				std::getline(file, line);
@@ -159,6 +160,7 @@ TPPLIBInstance * TPPLIBInstanceBuilder::buildFromFile(std::string filename) {
 					str_stream_offer >> offId >> offPrice >> offAvailability;
 					instance->offer_lists[node_index - 1][offId - 1].first = offPrice;
 					instance->offer_lists[node_index - 1][offId - 1].second = offAvailability;
+					instance->offer_sort_lists[offId - 1].push_back({ node_index - 1, offPrice, offAvailability });
 				}
 			}
 		}
@@ -295,7 +297,7 @@ TPPLIBInstance * TPPLIBInstanceBuilder::buildFromFile(std::string filename) {
 
 	file.close();
 
-	/* 
+	/*
 	 * 根据距离函数计算距离
 	 */
 	if (!instance->distance_matrix.size()) {
@@ -371,6 +373,17 @@ TPPLIBInstance * TPPLIBInstanceBuilder::buildFromFile(std::string filename) {
 				}
 			}
 		}
+	}
+
+	/*
+	 * 按照商品价格升序排序，存入 offer_sort_lists
+	 */
+	for (int i = 0; i < instance->offer_sort_lists.size(); i++) {
+		sort(
+			instance->offer_sort_lists[i].begin(), 
+			instance->offer_sort_lists[i].end(),
+			[](const NodePriQua &a, const NodePriQua &b) { return a.price < b.price; }
+		);
 	}
 
 	return instance;

@@ -9,8 +9,8 @@ int main() {
 
 	//std::string instanceName = "\\Clase1\\Singh33_2.33.50.1.5.tpp";
 	//std::string instanceName = "\\Clase2\\PearnChien.10.50.1.tpp";
-	//std::string instanceName = "\\Clase3\\EEuclideo.50.50.1.tpp";
-	std::string instanceName = "\\Clase5\\CapEuclideo.50.50.1.1.tpp";
+	std::string instanceName = "\\Clase3\\EEuclideo.50.50.1.tpp";
+	//std::string instanceName = "\\Clase5\\CapEuclideo.50.50.1.1.tpp";
 	
 	std::string file = FOLDER + instanceName;
 	auto methods = std::vector<std::string>();

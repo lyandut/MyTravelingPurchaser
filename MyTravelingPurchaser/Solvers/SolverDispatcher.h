@@ -1,22 +1,20 @@
 #pragma once
-
-#include <vector>
-#include <string>
-#include <map>
-#include "./CAHSolver.h"
+#include "../TPPLIBInstance/TPPLIBInstance.h"
+#include "./CAHSolver/CAHSolver.h"
+#include "./Improvements/CAHImprovement.h"
 
 
 class SolverDispatcher {
 public:
 	static void dispatch(std::string filename, std::vector<std::string> methods) {
+		
 		auto instance = TPPLIBInstanceBuilder::buildFromFile(filename);
+		Solutions mySolutions;
 
-		auto construction_method = methods.at(0);
-		Solutions solutions;
-
-		if (construction_method == "CAH") {
+		/* construction */
+		if (methods[0] == "CAH") {
 			CAHSolver cah_sol = CAHSolver();
-			solutions = cah_sol.construct(
+			mySolutions = cah_sol.construct(
 				instance->dimension,
 				instance->demands,
 				instance->offer_lists,
@@ -24,15 +22,20 @@ public:
 			);
 		}
 
-		//unsigned long method_size = methods.size();
-
-		//for (unsigned int i = 1; i < method_size; ++i) {
-		//	if (methods->at(i) == "2opt") {
-		//		auto two_opt_solver = new TwoOptSolver;
-		//		solutions = two_opt_solver->improve(instance->distance_matrix, instance->dimension, solutions);
-		//		delete two_opt_solver;
-		//	}
-		//}
+		/* improvement */
+		for (int i = 1; i < methods.size(); ++i) {
+			if (methods[i] == "CAH") {
+				CAHImprovement cah_improve_sol = CAHImprovement();
+				mySolutions = cah_improve_sol.improve(
+					instance->dimension,
+					instance->demands,
+					instance->offer_lists,
+					instance->offer_sort_lists,
+					instance->distance_matrix,
+					mySolutions
+				);
+			}
+		}
 
 		//auto t = solutions->at(0);
 		//MatlabVisualizer::visualize(instance, t->first);

@@ -3,7 +3,7 @@
 Solutions CAHSolver::construct(
 	unsigned int dimension,
 	const std::vector<int> &demands,
-	const std::vector<std::vector<PriAva>> &offer_lists,
+	const std::vector<std::vector<PriQua>> &offer_lists,
 	const std::vector<std::vector<int>> &distance_matrix
 ) {
 	double objective = 0.0;
@@ -52,36 +52,7 @@ Solutions CAHSolver::construct(
 		}
 	}
 
-	/* 3. Remaining units of product h=0 */
-	while (isSatisfy[h]) {
-		for (int i = 0; i < dimension; i++) {
-			if (isTravelled[i]) continue;
-			if (!offer_lists[i][h].second) continue;
-			// insert i into tour
-			auto tour_tmp = tour;
-			auto isTravelled_tmp = isTravelled;
-			auto isSatisfy_tmp = isSatisfy;
-			auto planTable_tmp = planTable;
-			double objective_tmp = insertTourSaving(
-				i, objective, 
-				tour_tmp, isTravelled_tmp, 
-				isSatisfy_tmp, planTable_tmp,
-				distance_matrix, offer_lists
-			);
-		   /* 
-		    * If product h is not yet fully purchased, 
-		    * Or if it is fully purchased and objective_new < objective_old
-		 	*/
-			if (isSatisfy[h] || (!isSatisfy[h] && objective > objective_tmp)) {
-				objective = objective_tmp;
-				tour = tour_tmp;
-				isTravelled = isTravelled_tmp;
-				isSatisfy = isSatisfy_tmp;
-				planTable = planTable_tmp;
-			}
-		}
-	}
-
+	/* 3. Remaining units of product h */
 	/* 4. Termination test */
 	while (h < isSatisfy.size()) {
 		while (isSatisfy[h]) {
@@ -135,7 +106,7 @@ double CAHSolver::insertTourSaving(
 	std::vector<int> &isSatisfy,
 	std::vector<std::vector<int>> &planTable,
 	const std::vector<std::vector<int>> &distance_matrix,
-	const std::vector<std::vector<PriAva>> &offer_lists
+	const std::vector<std::vector<PriQua>> &offer_lists
 ){
 	// purchase cost
 	for (int i = 0; i < offer_lists[index].size(); i++) {

@@ -1,12 +1,14 @@
 #pragma once
-#include <stdio.h>
-#include <vector>
-
-
-typedef std::pair<std::vector<unsigned int> *, int> Solution;
-typedef std::vector<Solution *> Solutions;
+#include "../common.h"
 
 class ImprovementHeuristic {
 public:
-	virtual Solutions *improve(int **distance_matrix, unsigned int n, Solutions *previous_solutions) = 0;
+	virtual Solutions improve(
+		unsigned int dimension,
+		const std::vector<int> &demands,
+		const std::vector<std::vector<PriQua>> &offer_lists,
+		const std::vector<std::vector<NodePriQua>> &offer_sort_lists,
+		const std::vector<std::vector<int>> &distance_matrix,
+		Solutions &previous_solutions
+	) = 0;
 };

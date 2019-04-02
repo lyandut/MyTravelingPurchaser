@@ -86,7 +86,6 @@ Solutions CAHSolver::construct(
 		h++;
 	}
 
-	std::cout << "Termination" << std::endl;
 	Solution sol;
 	sol.opitimization = objective;
 	sol.tour = tour;

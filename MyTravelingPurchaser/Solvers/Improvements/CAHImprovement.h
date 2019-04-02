@@ -19,5 +19,11 @@ public:
 		std::vector<std::vector<int>> &planTable
 	);
 
+	double newTravelRoute(
+		int index,
+		std::string method, 
+		std::vector<int> &tour,
+		const std::vector<std::vector<int>>& distance_matrix
+	);
 };
 

@@ -21,10 +21,12 @@ public:
 				instance->distance_matrix
 			);
 		}
+		std::cout << "***CAH-Construction***" << std::endl;
+		solutionsPrinter(mySolutions);
 
 		/* improvement */
 		for (int i = 1; i < methods.size(); ++i) {
-			if (methods[i] == "CAH") {
+			if (methods[i] == "CAHImprove") {
 				CAHImprovement cah_improve_sol = CAHImprovement();
 				mySolutions = cah_improve_sol.improve(
 					instance->dimension,
@@ -35,6 +37,8 @@ public:
 					mySolutions
 				);
 			}
+			std::cout << "***CAH-Improvement***" <<  std::endl;
+			solutionsPrinter(mySolutions);
 		}
 
 		//auto t = solutions->at(0);
@@ -43,7 +47,7 @@ public:
 		delete instance;
 	}
 
-	static void printChecker(TPPLIBInstance *instance) {
+	static void instancePrinter(TPPLIBInstance *instance) {
 		using std::cout; 
 		using std::endl;
 		cout << instance->name << endl;
@@ -51,6 +55,15 @@ public:
 		cout << instance->demands.size() << endl;
 		cout << instance->distance_matrix.size() << endl;
 		cout << instance->offer_lists.size() << endl;
+	}
+
+	static void solutionsPrinter(Solutions solutions) {
+		using std::cout;
+		using std::endl;
+		for (int i = 0; i < solutions.size(); i++) {
+			cout << solutions[i].opitimization << endl;
+			cout << solutions[i].tour.size() << endl;
+		}
 	}
 
 };

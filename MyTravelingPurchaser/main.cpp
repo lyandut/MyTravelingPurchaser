@@ -15,6 +15,7 @@ int main() {
 	std::string file = FOLDER + instanceName;
 	auto methods = std::vector<std::string>();
 	methods.push_back("CAH");
+	methods.push_back("CAHImprove");
 
 	SolverDispatcher::dispatch(file, methods);
 

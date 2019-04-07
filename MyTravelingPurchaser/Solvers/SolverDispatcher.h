@@ -1,6 +1,7 @@
 #pragma once
 #include "../TPPLIBInstance/TPPLIBInstance.h"
 #include "./CAHSolver/CAHSolver.h"
+#include "./GurobiSolver/GurobiSolver.h"
 #include "./Improvements/CAHImprovement.h"
 
 
@@ -21,25 +22,34 @@ public:
 				instance->distance_matrix
 			);
 		}
+		else if (methods[0] == "GRB") {
+			GurobiSolver grb_sol = GurobiSolver();
+			mySolutions = grb_sol.construct(
+				instance->dimension,
+				instance->demands,
+				instance->offer_lists,
+				instance->distance_matrix
+			);
+		}
 		std::cout << "***CAH-Construction***" << std::endl;
 		solutionsPrinter(mySolutions);
 
 		/* improvement */
-		for (int i = 1; i < methods.size(); ++i) {
-			if (methods[i] == "CAHImprove") {
-				CAHImprovement cah_improve_sol = CAHImprovement();
-				mySolutions = cah_improve_sol.improve(
-					instance->dimension,
-					instance->demands,
-					instance->offer_lists,
-					instance->offer_sort_lists,
-					instance->distance_matrix,
-					mySolutions
-				);
-			}
-			std::cout << "***CAH-Improvement***" <<  std::endl;
-			solutionsPrinter(mySolutions);
-		}
+		//for (int i = 1; i < methods.size(); ++i) {
+		//	if (methods[i] == "CAHImprove") {
+		//		CAHImprovement cah_improve_sol = CAHImprovement();
+		//		mySolutions = cah_improve_sol.improve(
+		//			instance->dimension,
+		//			instance->demands,
+		//			instance->offer_lists,
+		//			instance->offer_sort_lists,
+		//			instance->distance_matrix,
+		//			mySolutions
+		//		);
+		//	}
+		//	std::cout << "***CAH-Improvement***" <<  std::endl;
+		//	solutionsPrinter(mySolutions);
+		//}
 
 		//auto t = solutions->at(0);
 		//MatlabVisualizer::visualize(instance, t->first);

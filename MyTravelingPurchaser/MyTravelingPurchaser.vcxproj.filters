@@ -20,9 +20,15 @@
     <Filter Include="Solvers\Improvements">
       <UniqueIdentifier>{efcc07e3-4bf1-4fd8-a603-f69170ce1e53}</UniqueIdentifier>
     </Filter>
-    <Filter Include="main">
+    <Filter Include="run">
       <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
       <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="Solvers\MpSolver">
+      <UniqueIdentifier>{3111340d-1161-4124-822e-c25e0437d255}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Solvers\Gurobi">
+      <UniqueIdentifier>{bd145c8f-9963-424a-a63a-a5047b940e19}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -45,12 +51,36 @@
       <Filter>Solvers\Improvements</Filter>
     </ClInclude>
     <ClInclude Include="common.h">
-      <Filter>main</Filter>
+      <Filter>run</Filter>
+    </ClInclude>
+    <ClInclude Include="Solvers\GurobiSolver\GurobiSolver.h">
+      <Filter>Solvers\Gurobi</Filter>
+    </ClInclude>
+    <ClInclude Include="MyUtility\MpSolver\Common.h">
+      <Filter>Solvers\MpSolver</Filter>
+    </ClInclude>
+    <ClInclude Include="MyUtility\MpSolver\Config.h">
+      <Filter>Solvers\MpSolver</Filter>
+    </ClInclude>
+    <ClInclude Include="MyUtility\MpSolver\LogSwitch.h">
+      <Filter>Solvers\MpSolver</Filter>
+    </ClInclude>
+    <ClInclude Include="MyUtility\MpSolver\MpSolver.h">
+      <Filter>Solvers\MpSolver</Filter>
+    </ClInclude>
+    <ClInclude Include="MyUtility\MpSolver\MpSolverBase.h">
+      <Filter>Solvers\MpSolver</Filter>
+    </ClInclude>
+    <ClInclude Include="MyUtility\MpSolver\MpSolverGurobi.h">
+      <Filter>Solvers\MpSolver</Filter>
+    </ClInclude>
+    <ClInclude Include="MyUtility\MpSolver\Utility.h">
+      <Filter>Solvers\MpSolver</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
-      <Filter>main</Filter>
+      <Filter>run</Filter>
     </ClCompile>
     <ClCompile Include="TPPLIBInstance\TPPLIBInstance.cpp">
       <Filter>TPPLIBInstance</Filter>
@@ -60,6 +90,15 @@
     </ClCompile>
     <ClCompile Include="Solvers\Improvements\CAHImprovement.cpp">
       <Filter>Solvers\Improvements</Filter>
+    </ClCompile>
+    <ClCompile Include="Solvers\GurobiSolver\GurobiSolver.cpp">
+      <Filter>Solvers\Gurobi</Filter>
+    </ClCompile>
+    <ClCompile Include="MyUtility\MpSolver\MpSolverGurobi.cpp">
+      <Filter>Solvers\MpSolver</Filter>
+    </ClCompile>
+    <ClCompile Include="MyUtility\MpSolver\Utility.cpp">
+      <Filter>Solvers\MpSolver</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

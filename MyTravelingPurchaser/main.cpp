@@ -9,13 +9,14 @@ int main() {
 
 	//std::string instanceName = "\\Clase1\\Singh33_2.33.50.1.5.tpp";
 	//std::string instanceName = "\\Clase2\\PearnChien.10.50.1.tpp";
-	std::string instanceName = "\\Clase3\\EEuclideo.50.50.1.tpp";
-	//std::string instanceName = "\\Clase5\\CapEuclideo.50.50.1.1.tpp";
+	//std::string instanceName = "\\Clase3\\EEuclideo.50.50.1.tpp";
+	std::string instanceName = "\\Clase5\\CapEuclideo.50.50.1.1.tpp";
 	
 	std::string file = FOLDER + instanceName;
 	auto methods = std::vector<std::string>();
-	methods.push_back("CAH");
-	methods.push_back("CAHImprove");
+	//methods.emplace_back("CAH");
+	methods.emplace_back("GRB");
+	methods.emplace_back("CAHImprove");
 
 	SolverDispatcher::dispatch(file, methods);
 

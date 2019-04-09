@@ -9,9 +9,9 @@
 //#define CLASE "Clase3\\"
 //#define INSTANCENAME "EEuclideo.50.50.1.tpp"
 #define CLASE "Clase5\\"
-#define INSTANCENAME "CapEuclideo.200.100.99.5.tpp"
+#define INSTANCENAME "CapEuclideo.50.50.1.1.tpp"
 #pragma endregion InstanceConfig
 
 #pragma region GurobiConfig
-#define timeoutInSecond 3600
+#define timeoutInSecond 60
 #pragma endregion GurobiConfig

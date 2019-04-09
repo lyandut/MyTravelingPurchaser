@@ -187,6 +187,7 @@
     <ClInclude Include="..\Lib\LKH3\Sequence.h" />
     <ClInclude Include="Main\TPPCommon.h" />
     <ClInclude Include="Main\TPPConfig.h" />
+    <ClInclude Include="Checker\MyTPPChecker.h" />
     <ClInclude Include="MyUtility\Common.h" />
     <ClInclude Include="MyUtility\Config.h" />
     <ClInclude Include="MyUtility\LogSwitch.h" />
@@ -362,6 +363,7 @@
     <ClCompile Include="..\Lib\LKH3\WriteTour.cpp" />
     <ClCompile Include="..\Lib\LKH3\_LKH.cpp" />
     <ClCompile Include="Main\main.cpp" />
+    <ClCompile Include="Checker\MyTPPChecker.cpp" />
     <ClCompile Include="MyUtility\MpSolverGurobi.cpp" />
     <ClCompile Include="MyUtility\Utility.cpp" />
     <ClCompile Include="Solvers\GurobiSolver\GurobiSolver.cpp" />

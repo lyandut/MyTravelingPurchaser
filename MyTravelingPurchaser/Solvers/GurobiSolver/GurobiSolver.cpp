@@ -155,15 +155,15 @@ Solutions GurobiSolver::construct(
 	static const String TspCacheDir("TspCache/");
 	System::makeSureDirExist(TspCacheDir);
 	CachedTspSolver tspSolver(dimension, TspCacheDir + INSTANCENAME + ".csv");
-	Solution hisSln; // history solution.
-	hisSln.opitimization = INT_MAX;
+	Solution bestSln; // history solution.
+	bestSln.opitimization = INT_MAX;
 	Solution curSln; // current solution.
 			
 
 	/* CallBack
-     * 2. nodeSetHandler - LKH修复（二维坐标）
+     * 2. nodeSetHandlerWithCoord2Ds - LKH修复（二维坐标）
      */
-	auto nodeSetHandler = [&](MpSolver::MpEvent &e) {
+	auto nodeSetHandlerWithCoord2Ds = [&](MpSolver::MpEvent &e) {
 		//if (e.getObj() > sln.totalCost) { e.stop(); } // there could be bad heuristic solutions.
 
 		// OPTIMIZE[szx][0]: check the bound and only apply this to the optimal sln.
@@ -177,6 +177,7 @@ Solutions GurobiSolver::construct(
 		Expr nodeDiff;
 
 		curSln.opitimization = 0;
+		curSln.tour.clear();
 		fill(containNode.begin(), containNode.end(), false);
 		for (ID n = 0; n < dimension; ++n) {
 			bool visited = false;
@@ -210,9 +211,9 @@ Solutions GurobiSolver::construct(
 		e.addLazy(nodeDiff >= 1);
 
 		curSln.opitimization += e.getValue(purchaseCost);
-		if (curSln.opitimization < hisSln.opitimization) {
+		if (curSln.opitimization < bestSln.opitimization) {
 			Log(LogSwitch::Szx::Model) << "opt=" << curSln.opitimization << std::endl;
-			std::swap(curSln, hisSln);
+			std::swap(curSln, bestSln);
 		}
 	};
 
@@ -231,6 +232,7 @@ Solutions GurobiSolver::construct(
 		Expr nodeDiff;
 
 		curSln.opitimization = 0;
+		curSln.tour.clear();
 		fill(containNode.begin(), containNode.end(), false);
 		for (ID n = 0; n < dimension; ++n) {
 			bool visited = false;
@@ -268,32 +270,37 @@ Solutions GurobiSolver::construct(
 			curSln.tour.push_back(*n);
 			curSln.opitimization += distance_matrix[*n][*m];
 		}
-		e.addLazy(nodeDiff >= 1);
+		/* 添加一条Tsp解的禁忌约束，
+		 * 翻转一个点的状态y[n]即为当前解的一个邻域，
+		 * 搜索空间巨大
+		 */
+		//e.addLazy(nodeDiff >= 1);     
 
 		curSln.opitimization += e.getValue(purchaseCost);
-		if (curSln.opitimization < hisSln.opitimization) {
-			Log(LogSwitch::Szx::Model) << "opt=" << curSln.opitimization << std::endl;
-			std::swap(curSln, hisSln);
+		if (curSln.opitimization < bestSln.opitimization) {
+			Log(LogSwitch::Szx::Model) << "opt=" << curSln.opitimization << "\ttourSize=" << curSln.tour.size() << std::endl;
+			std::swap(curSln, bestSln);
 		}
 	};
 
 	/* CallBack
-	 * 4. nodeSetHandlerWithAdjMat - LKH修复（邻接矩阵）
+	 * 4. combineHandler
  	 */
-	int iterTimes = 0;
-	auto iterHandlerWithTimes = [&](MpSolver::MpEvent &e) {
-		if (iterTimes % 100 == 0) {
-			mp.setMipSlnEvent(nodeSetHandlerWithAdjMat);
+	int flag = 0;
+	auto combineHandler = [&](MpSolver::MpEvent &e) {
+		if (flag % 2) { // Odd
+			nodeSetHandlerWithAdjMat(e);
+			subTourHandler(e);
 		}
-		else {
-			mp.setMipSlnEvent(subTourHandler);
+		else { // Even
+			subTourHandler(e);
+			nodeSetHandlerWithAdjMat(e);
 		}
-		iterTimes++;
 	};
 
 	//mp.setMipSlnEvent(subTourHandler);
 	//mp.setMipSlnEvent(nodeSetHandlerWithAdjMat);
-	mp.setMipSlnEvent(iterHandlerWithTimes);
+	mp.setMipSlnEvent(combineHandler);
 
 
 	Solution sln;

@@ -2,10 +2,11 @@
  * Construct Solution by Gurobi 
  */
 #include "GurobiSolver.h"
-#include "../../MyUtility/MpSolver/MpSolver.h"
-#include "../../TPPLIBInstance/TPPLIBInstance.h"
-
-const double timeoutInSecond = 180.0;
+#include <algorithm>
+#include "LKH3Lib/CachedTspSolver.h"
+#include "../../MyUtility/MpSolver.h"
+#include "../../MyUtility/LogSwitch.h"
+#include "../../Main/TPPConfig.h"
 
 using namespace szx;
 
@@ -94,8 +95,8 @@ Solutions GurobiSolver::construct(
 	obj = routeCost + purchaseCost;
 	mp.addObjective(obj, MpSolver::OptimaOrientation::Minimize, 0, 0, 0, timeoutInSecond);
 
-	/*
-	 * CallBack
+	/* CallBack
+	 * 1. subTourHandler - 添加子回路惰性约束
 	 */
 	auto subTourHandler = [&](MpSolver::MpEvent &e) {
 		enum EliminationPolicy { // OPTIMIZE[szx][0]: first sub-tour, best sub-tour or all sub-tours?
@@ -149,7 +150,151 @@ Solutions GurobiSolver::construct(
 			e.addLazy(edges <= static_cast<double>(bestTour.size() - 1));
 		}
 	};
-	mp.setMipSlnEvent(subTourHandler);
+	
+	
+	static const String TspCacheDir("TspCache/");
+	System::makeSureDirExist(TspCacheDir);
+	CachedTspSolver tspSolver(dimension, TspCacheDir + INSTANCENAME + ".csv");
+	Solution hisSln; // history solution.
+	hisSln.opitimization = INT_MAX;
+	Solution curSln; // current solution.
+			
+
+	/* CallBack
+     * 2. nodeSetHandler - LKH修复（二维坐标）
+     */
+	auto nodeSetHandler = [&](MpSolver::MpEvent &e) {
+		//if (e.getObj() > sln.totalCost) { e.stop(); } // there could be bad heuristic solutions.
+
+		// OPTIMIZE[szx][0]: check the bound and only apply this to the optimal sln.
+
+		static constexpr double Precision = 1000;
+		lkh::CoordList2D coords; // OPTIMIZE[szx][3]: use adjacency matrix to avoid re-calculation and different rounding?
+		coords.reserve(dimension);
+		List<ID> nodeIdMap(dimension);    // 保存coords第n个节点的ID
+		List<bool> containNode(dimension);
+		lkh::Tour tour;
+		Expr nodeDiff;
+
+		curSln.opitimization = 0;
+		fill(containNode.begin(), containNode.end(), false);
+		for (ID n = 0; n < dimension; ++n) {
+			bool visited = false;
+			for (ID m = 0; m < dimension; ++m) {
+				if (n == m) { continue; }
+				if (!e.isTrue(x.at(n, m))) { continue; }
+				nodeIdMap[coords.size()] = n;
+				containNode[n] = true;
+				// OPTIMIZE[lyan][1]: fix Coord2D input
+				//coords.push_back(lkh::Coord2D(nodes[n].x() * Precision, nodes[n].y() * Precision));
+				visited = true;
+				break;
+			}
+			nodeDiff += (visited ? (1 - y[n]) : y[n]);
+		}
+		if (coords.size() > 2) { // repair the relaxed solution.
+			// [&](ID n) { return nodeIdMap[n]; } 返回coords第n个节点的ID
+			tspSolver.solve(tour, containNode, coords, [&](ID n) { return nodeIdMap[n]; });
+		}
+		else if (coords.size() == 2) { // trivial cases.
+			tour.nodes.resize(2);
+			tour.nodes[0] = nodeIdMap[0];
+			tour.nodes[1] = nodeIdMap[1];
+		}
+		else { return; }
+		tour.nodes.push_back(tour.nodes.front());
+		for (auto n = tour.nodes.begin(), m = n + 1; m != tour.nodes.end(); ++n, ++m) {
+			curSln.tour.push_back(*n);
+			curSln.opitimization += distance_matrix[*n][*m];
+		}
+		e.addLazy(nodeDiff >= 1);
+
+		curSln.opitimization += e.getValue(purchaseCost);
+		if (curSln.opitimization < hisSln.opitimization) {
+			Log(LogSwitch::Szx::Model) << "opt=" << curSln.opitimization << std::endl;
+			std::swap(curSln, hisSln);
+		}
+	};
+
+	/* CallBack
+	 * 3. nodeSetHandlerWithAdjMat - LKH修复（邻接矩阵）
+	 */
+	auto nodeSetHandlerWithAdjMat = [&](MpSolver::MpEvent &e) {
+		//if (e.getObj() > sln.totalCost) { e.stop(); } // there could be bad heuristic solutions.
+
+		// OPTIMIZE[szx][0]: check the bound and only apply this to the optimal sln.
+
+		List<ID> nodeIdMap;
+		nodeIdMap.reserve(dimension);
+		List<bool> containNode(dimension);
+		lkh::Tour tour;
+		Expr nodeDiff;
+
+		curSln.opitimization = 0;
+		fill(containNode.begin(), containNode.end(), false);
+		for (ID n = 0; n < dimension; ++n) {
+			bool visited = false;
+			for (ID m = 0; m < dimension; ++m) {
+				if (n == m) { continue; }
+				if (!e.isTrue(x.at(n, m))) { continue; }
+				nodeIdMap.push_back(n);
+				containNode[n] = true;
+				visited = true;
+				break;
+			}
+			nodeDiff += (visited ? (1 - y[n]) : y[n]);
+		}
+		int mapSize = nodeIdMap.size();
+		lkh::AdjMat adjMat(mapSize, mapSize);
+		for (int i = 0; i < mapSize; i++) {
+			int n = nodeIdMap[i];
+			for (int j = 0; j < mapSize; j++) {
+				int m = nodeIdMap[j];
+				adjMat.at(i, j) = distance_matrix[n][m];
+			}
+		}
+		if (mapSize > 2) { // repair the relaxed solution.
+			// [&](ID n) { return nodeIdMap[n]; } 返回第n个节点的ID
+			tspSolver.solve(tour, containNode, adjMat, [&](ID n) { return nodeIdMap[n]; });
+		}
+		else if (mapSize == 2) { // trivial cases.
+			tour.nodes.resize(2);
+			tour.nodes[0] = nodeIdMap[0];
+			tour.nodes[1] = nodeIdMap[1];
+		}
+		else { return; }
+		tour.nodes.push_back(tour.nodes.front());
+		for (auto n = tour.nodes.begin(), m = n + 1; m != tour.nodes.end(); ++n, ++m) {
+			curSln.tour.push_back(*n);
+			curSln.opitimization += distance_matrix[*n][*m];
+		}
+		e.addLazy(nodeDiff >= 1);
+
+		curSln.opitimization += e.getValue(purchaseCost);
+		if (curSln.opitimization < hisSln.opitimization) {
+			Log(LogSwitch::Szx::Model) << "opt=" << curSln.opitimization << std::endl;
+			std::swap(curSln, hisSln);
+		}
+	};
+
+	/* CallBack
+	 * 4. nodeSetHandlerWithAdjMat - LKH修复（邻接矩阵）
+ 	 */
+	int iterTimes = 0;
+	auto iterHandlerWithTimes = [&](MpSolver::MpEvent &e) {
+		if (iterTimes % 100 == 0) {
+			mp.setMipSlnEvent(nodeSetHandlerWithAdjMat);
+		}
+		else {
+			mp.setMipSlnEvent(subTourHandler);
+		}
+		iterTimes++;
+	};
+
+	//mp.setMipSlnEvent(subTourHandler);
+	//mp.setMipSlnEvent(nodeSetHandlerWithAdjMat);
+	mp.setMipSlnEvent(iterHandlerWithTimes);
+
 
 	Solution sln;
 	List<ID> slnTour;

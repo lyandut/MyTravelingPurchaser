@@ -6,7 +6,7 @@
 #include <functional>
 #include <cctype>
 #include <cmath>
-#include "../common.h"
+#include "../Main/TPPCommon.h"
 
 
 

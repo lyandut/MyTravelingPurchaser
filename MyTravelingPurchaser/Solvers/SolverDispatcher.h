@@ -54,7 +54,7 @@ public:
 		//auto t = solutions->at(0);
 		//MatlabVisualizer::visualize(instance, t->first);
 
-		delete instance;
+ 		delete instance;
 	}
 
 	static void instancePrinter(TPPLIBInstance *instance) {

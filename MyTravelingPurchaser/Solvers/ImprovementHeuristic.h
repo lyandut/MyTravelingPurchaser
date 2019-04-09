@@ -1,5 +1,5 @@
 #pragma once
-#include "../common.h"
+#include "../Main/TPPCommon.h"
 
 class ImprovementHeuristic {
 public:

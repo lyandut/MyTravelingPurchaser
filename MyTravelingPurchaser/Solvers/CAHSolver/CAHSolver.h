@@ -10,9 +10,9 @@ public:
 		const std::vector<std::vector<int>>& distance_matrix
 	) override;
 	
-	double insertTourSaving(
+	int insertTourSaving(
 		int index,
-		double objective,
+		int objective,
 		std::vector<int> &tour,
 		std::vector<int> &isTravelled,
 		std::vector<int> &isSatisfy,

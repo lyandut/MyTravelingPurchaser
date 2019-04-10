@@ -1,4 +1,5 @@
 #include "CAHSolver.h"
+#include <cmath>
 
 Solutions CAHSolver::construct(
 	unsigned int dimension,
@@ -6,7 +7,7 @@ Solutions CAHSolver::construct(
 	const std::vector<std::vector<PriQua>> &offer_lists,
 	const std::vector<std::vector<int>> &distance_matrix
 ) {
-	double objective = 0.0;
+	int objective = 0;
 	auto isSatisfy = demands;
 	std::vector<int> tour;
 	std::vector<int> isTravelled(dimension, 0);
@@ -20,13 +21,13 @@ Solutions CAHSolver::construct(
 
 	/* 2. First units of product h=0 */
 	int minIndex;
-	double minCost = -1.0;
+	int minCost = -1;
 	for (int i = 1; i < dimension; i++) {
 		int iPrice = offer_lists[i][h].first;
 		int iQuantity = offer_lists[i][h].second;
 		if (!iQuantity) continue;
-		double currCost = 2.0*distance_matrix[0][i] / (double)iQuantity + (double)iPrice;
-		if (currCost < minCost || minCost == -1.0) {
+		int currCost = std::lround(2.0*distance_matrix[0][i] / 1.0*iQuantity) + iPrice;
+		if (currCost < minCost || minCost == -1) {
 			minCost = currCost;
 			minIndex = i;
 		}
@@ -35,18 +36,18 @@ Solutions CAHSolver::construct(
 	tour.emplace_back(minIndex);
 	tour.emplace_back(0);         // 闭环 { 0, minIndex, 0 }
 	// 计算目标函数值 objective，更新购买计划表 planTable
-	objective += 2.0*distance_matrix[0][minIndex];
+	objective += distance_matrix[0][minIndex];
 	for (int i = 0; i < offer_lists[minIndex].size(); i++) {
 		int iPrice = offer_lists[minIndex][i].first;
 		int iQuantity = offer_lists[minIndex][i].second;
 		if (!iQuantity) continue;
 		if (iQuantity >= isSatisfy[i]) {
-			objective += 1.0*isSatisfy[i] * iPrice;
+			objective += isSatisfy[i] * iPrice;
 			planTable[minIndex][i] = isSatisfy[i];
 			isSatisfy[i] = 0;
 		}
 		else {
-			objective += 1.0*iQuantity * iPrice;
+			objective += iQuantity * iPrice;
 			planTable[minIndex][i] = iQuantity;
 			isSatisfy[i] -= iQuantity;
 		}
@@ -64,7 +65,7 @@ Solutions CAHSolver::construct(
 				auto isTravelled_tmp = isTravelled;
 				auto isSatisfy_tmp = isSatisfy;
 				auto planTable_tmp = planTable;
-				double objective_tmp = insertTourSaving(
+				int objective_tmp = insertTourSaving(
 					i, objective,
 					tour_tmp, isTravelled_tmp,
 					isSatisfy_tmp, planTable_tmp,
@@ -97,9 +98,9 @@ Solutions CAHSolver::construct(
 	return result;
 }
 
-double CAHSolver::insertTourSaving(
+int CAHSolver::insertTourSaving(
 	int index,
-	double objective,
+	int objective,
 	std::vector<int> &tour,
 	std::vector<int> &isTravelled,
 	std::vector<int> &isSatisfy,
@@ -114,12 +115,12 @@ double CAHSolver::insertTourSaving(
 		if (!iQuantity) continue;
 		if (isSatisfy[i]) { // 未满足需求，直接购买
 			if (iQuantity >= isSatisfy[i]) {
-				objective += 1.0*isSatisfy[i] * iPrice;
+				objective += isSatisfy[i] * iPrice;
 				planTable[index][i] = isSatisfy[i];
 				isSatisfy[i] = 0;
 			}
 			else {
-			 	objective += 1.0*iQuantity * iPrice;
+			 	objective += iQuantity * iPrice;
 				planTable[index][i] = iQuantity;
 				isSatisfy[i] -= iQuantity;
 			}		
@@ -130,14 +131,14 @@ double CAHSolver::insertTourSaving(
 				int jPrice = offer_lists[tour[j]][i].first;
 				if (jQuantity && jPrice > iPrice) {
 					if (jQuantity > iQuantity) {
-						objective -= 1.0*iQuantity*jPrice;
-						objective += 1.0*iQuantity*iPrice;
+						objective -= iQuantity * jPrice;
+						objective += iQuantity * iPrice;
 						planTable[tour[j]][i] = jQuantity - iQuantity;
 						planTable[index][i] = iQuantity;
 					}
 					else {
-						objective -= 1.0*jQuantity*jPrice;
-						objective += 1.0*jQuantity*iPrice;
+						objective -= jQuantity * jPrice;
+						objective += jQuantity * iPrice;
 						planTable[tour[j]][i] = 0;
 						planTable[index][i] = jQuantity;
 					}
@@ -160,7 +161,7 @@ double CAHSolver::insertTourSaving(
 		}
 	}
 	
-	objective += (double)minRouteCost;
+	objective += minRouteCost;
 	tour.insert(tour.begin() + indexToInsert, index);
 	isTravelled[index] = 1;
 

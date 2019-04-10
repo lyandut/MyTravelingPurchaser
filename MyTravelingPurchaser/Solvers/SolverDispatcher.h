@@ -3,6 +3,7 @@
 #include "./CAHSolver/CAHSolver.h"
 #include "./GurobiSolver/GurobiSolver.h"
 #include "./Improvements/CAHImprovement.h"
+#include "../Checker/MyTPPChecker.h"
 
 
 class SolverDispatcher {
@@ -12,7 +13,7 @@ public:
 		auto instance = TPPLIBInstanceBuilder::buildFromFile(filename);
 		Solutions mySolutions;
 
-		/* construction */
+		/* Construction */
 		if (methods[0] == "CAH") {
 			CAHSolver cah_sol = CAHSolver();
 			mySolutions = cah_sol.construct(
@@ -31,10 +32,10 @@ public:
 				instance->distance_matrix
 			);
 		}
-		std::cout << "***CAH-Construction***" << std::endl;
+		std::cout << "***Construction***" << std::endl;
 		solutionsPrinter(mySolutions);
 
-		/* improvement */
+		/* Improvement */
 		//for (int i = 1; i < methods.size(); ++i) {
 		//	if (methods[i] == "CAHImprove") {
 		//		CAHImprovement cah_improve_sol = CAHImprovement();
@@ -51,6 +52,18 @@ public:
 		//	solutionsPrinter(mySolutions);
 		//}
 
+		/* Checker */
+		MyTPPChecker tpp_checker = MyTPPChecker();
+		for (auto sln : mySolutions) {
+			tpp_checker.myTppChecker(
+				sln, instance->dimension,
+				instance->demands,
+				instance->offer_lists,
+				instance->distance_matrix
+			);
+		}
+		
+		/* Visualizer */
 		//auto t = solutions->at(0);
 		//MatlabVisualizer::visualize(instance, t->first);
 
@@ -71,8 +84,25 @@ public:
 		using std::cout;
 		using std::endl;
 		for (int i = 0; i < solutions.size(); i++) {
-			cout << solutions[i].opitimization << endl;
-			cout << solutions[i].tour.size() << endl;
+			auto slnOpt = solutions[i].opitimization;
+			auto slnTour = solutions[i].tour;
+			cout << "Opitimization: " << slnOpt << endl;
+			cout << "Tour Size(include 0): " << slnTour.size() << endl;
+			for (auto n : slnTour)
+				cout << n << '\t';
+			cout << endl;
+		}
+		/* Compare Purchase Plan */
+		for (int i = 0; i < solutions.size() - 1; i++) {
+			auto slnPlan = solutions[i].planTable;
+			auto slnPlan2 = solutions[i + 1].planTable;
+			cout << "Purchase Plan:" << endl;
+			for (int n = 0; n < slnPlan.size(); n++) {
+				for (int k = 0; k < slnPlan[n].size(); k++) {
+					if (slnPlan[n][k] != slnPlan2[n][k])
+						cout << n << '-' << k << ":\t" << slnPlan[n][k] << '\t' << slnPlan2[n][k] << endl;
+				}
+			}
 		}
 	}
 

@@ -2,6 +2,7 @@
  * Construct Solution by Gurobi 
  */
 #include "GurobiSolver.h"
+#include <cmath>
 #include <algorithm>
 #include "LKH3Lib/CachedTspSolver.h"
 #include "../../MyUtility/MpSolver.h"
@@ -155,9 +156,10 @@ Solutions GurobiSolver::construct(
 	static const String TspCacheDir("TspCache/");
 	System::makeSureDirExist(TspCacheDir);
 	CachedTspSolver tspSolver(dimension, TspCacheDir + INSTANCENAME + ".csv");
-	Solution bestSln; // history solution.
-	bestSln.opitimization = INT_MAX;
+	
 	Solution curSln; // current solution.
+	Solution bestSln; // history best solution.
+	bestSln.opitimization = INT_MAX;
 			
 
 	/* CallBack
@@ -210,7 +212,7 @@ Solutions GurobiSolver::construct(
 		}
 		e.addLazy(nodeDiff >= 1);
 
-		curSln.opitimization += e.getValue(purchaseCost);
+		curSln.opitimization += lround(e.getValue(purchaseCost));
 		if (curSln.opitimization < bestSln.opitimization) {
 			Log(LogSwitch::Szx::Model) << "opt=" << curSln.opitimization << std::endl;
 			std::swap(curSln, bestSln);
@@ -228,11 +230,12 @@ Solutions GurobiSolver::construct(
 		List<ID> nodeIdMap;
 		nodeIdMap.reserve(dimension);
 		List<bool> containNode(dimension);
-		lkh::Tour tour;
+		lkh::Tour lkhTour;
 		Expr nodeDiff;
 
 		curSln.opitimization = 0;
 		curSln.tour.clear();
+		curSln.planTable = List<List<ID>>(dimension, List<ID>(demandNum, 0));
 		fill(containNode.begin(), containNode.end(), false);
 		for (ID n = 0; n < dimension; ++n) {
 			bool visited = false;
@@ -244,8 +247,14 @@ Solutions GurobiSolver::construct(
 				visited = true;
 				break;
 			}
-			nodeDiff += (visited ? (1 - y[n]) : y[n]);
+		    // 添加一条Tsp访问节点的禁忌约束，翻转一个点的状态y[n]即为当前解的一个邻域，但搜索空间巨大
+			//nodeDiff += (visited ? (1 - y[n]) : y[n]);
+			for (ID k = 0; k < demandNum; ++k) {
+				curSln.planTable[n][k] = lround(e.getValue(planTable[n][k]));
+			}
 		}
+		//e.addLazy(nodeDiff >= 1);
+
 		int mapSize = nodeIdMap.size();
 		lkh::AdjMat adjMat(mapSize, mapSize);
 		for (int i = 0; i < mapSize; i++) {
@@ -257,26 +266,21 @@ Solutions GurobiSolver::construct(
 		}
 		if (mapSize > 2) { // repair the relaxed solution.
 			// [&](ID n) { return nodeIdMap[n]; } 返回第n个节点的ID
-			tspSolver.solve(tour, containNode, adjMat, [&](ID n) { return nodeIdMap[n]; });
+			tspSolver.solve(lkhTour, containNode, adjMat, [&](ID n) { return nodeIdMap[n]; });
 		}
 		else if (mapSize == 2) { // trivial cases.
-			tour.nodes.resize(2);
-			tour.nodes[0] = nodeIdMap[0];
-			tour.nodes[1] = nodeIdMap[1];
+			lkhTour.nodes.resize(2);
+			lkhTour.nodes[0] = nodeIdMap[0];
+			lkhTour.nodes[1] = nodeIdMap[1];
 		}
 		else { return; }
-		tour.nodes.push_back(tour.nodes.front());
-		for (auto n = tour.nodes.begin(), m = n + 1; m != tour.nodes.end(); ++n, ++m) {
-			curSln.tour.push_back(*n);
+		lkhTour.nodes.push_back(lkhTour.nodes.front());
+		for (auto n = lkhTour.nodes.begin(), m = n + 1; m != lkhTour.nodes.end(); ++n, ++m) {
 			curSln.opitimization += distance_matrix[*n][*m];
 		}
-		/* 添加一条Tsp解的禁忌约束，
-		 * 翻转一个点的状态y[n]即为当前解的一个邻域，
-		 * 搜索空间巨大
-		 */
-		//e.addLazy(nodeDiff >= 1);     
+		curSln.tour = lkhTour.nodes;
+		curSln.opitimization += lround(e.getValue(purchaseCost));
 
-		curSln.opitimization += e.getValue(purchaseCost);
 		if (curSln.opitimization < bestSln.opitimization) {
 			Log(LogSwitch::Szx::Model) << "opt=" << curSln.opitimization << "\ttourSize=" << curSln.tour.size() << std::endl;
 			std::swap(curSln, bestSln);
@@ -303,7 +307,11 @@ Solutions GurobiSolver::construct(
 	mp.setMipSlnEvent(combineHandler);
 
 
-	Solution sln;
+	/* Return Solutions
+	 * 1. MpSln - 模型求得最优解，只取采购方案
+	 * 2. bestSln - lkh修复路由得到的
+	 */
+	Solution MpSln;
 	List<ID> slnTour;
 	List<List<ID>> slnPlanTable(dimension, List<ID>(demandNum, 0));
 	if (mp.optimize()) {
@@ -315,19 +323,20 @@ Solutions GurobiSolver::construct(
 				if (!mp.isTrue(x.at(prev, n))) { continue; }
 				slnTour.push_back(n);
 				for (int k = 0; k < demandNum; ++k) {
-					slnPlanTable[n][k] = mp.getValue(planTable[n][k]);
+					slnPlanTable[n][k] = lround(mp.getValue(planTable[n][k]));
 				}
 				prev = n;
 				break;
 			}
 		} while (prev != 0);
 
-		sln.opitimization = obj.getValue();
-		sln.tour = slnTour;
-		sln.planTable = slnPlanTable;
-	}
+		MpSln.opitimization = lround(obj.getValue());
+		MpSln.tour = slnTour;
+		MpSln.planTable = slnPlanTable;
+	}	
 
 	Solutions result;
-	result.emplace_back(sln);
+	result.emplace_back(MpSln);
+	result.emplace_back(bestSln);
 	return result;
 }

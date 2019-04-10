@@ -16,10 +16,10 @@ Solutions CAHImprovement::improve(
 	for (int i = 1; i < hisSolution.tour.size() - 1; i++) {
 		// route cost
 		auto newTour = hisSolution.tour;
-		double newRouteCost = newTravelRoute(hisSolution.tour[i], "DROP", newTour, distance_matrix);
+		int newRouteCost = newTravelRoute(hisSolution.tour[i], "DROP", newTour, distance_matrix);
 		// purchase cost
 		std::vector<std::vector<int>> newPlanTable(dimension, std::vector<int>(demands.size(), 0));
-		double newObjective = newPurchasePlan(newTour, demands, offer_sort_lists, newPlanTable);
+		int newObjective = newPurchasePlan(newTour, demands, offer_sort_lists, newPlanTable);
 		if (newObjective < 0) continue;
 		// total cost
 		newObjective += newRouteCost;
@@ -38,10 +38,10 @@ Solutions CAHImprovement::improve(
 		if (iter == hisSolution.tour.end()) {
 			// route cost: add
 			auto newTour = hisSolution.tour;
-			double newRouteCost = newTravelRoute(i, "ADD", newTour, distance_matrix);
+			int newRouteCost = newTravelRoute(i, "ADD", newTour, distance_matrix);
 			// purchase cost
 			std::vector<std::vector<int>> newPlanTable(dimension, std::vector<int>(demands.size(), 0));
-			double newObjective = newPurchasePlan(newTour, demands, offer_sort_lists, newPlanTable);
+			int newObjective = newPurchasePlan(newTour, demands, offer_sort_lists, newPlanTable);
 			// route cost: drop
 			// Drop from the solution all markets where no purchase is made.
 			std::vector<int> indexToDel;
@@ -80,13 +80,13 @@ Solutions CAHImprovement::improve(
 	return result;
 }
 
-double CAHImprovement::newPurchasePlan(
+int CAHImprovement::newPurchasePlan(
 	const std::vector<int>& tour, 
 	const std::vector<int>& demands, 
 	const std::vector<std::vector<NodePriQua>> &offer_sort_lists,
 	std::vector<std::vector<int>>& planTable
 ) {
-	double objective = -1.0;
+	int objective = -1;
 	auto isSatisfy = demands;
 	int h = 0;
 	while (h < isSatisfy.size()) {
@@ -97,19 +97,19 @@ double CAHImprovement::newPurchasePlan(
 				int iPrice = offer_sort_lists[h][i].price;
 				int iQuantity = offer_sort_lists[h][i].quantity;
 				if (iQuantity >= isSatisfy[h]) {
-					objective += 1.0*isSatisfy[h] * iPrice;
+					objective += isSatisfy[h] * iPrice;
 					planTable[iNode][h] = isSatisfy[h];
 					isSatisfy[h] = 0;
 				}
 				else {
-					objective += 1.0*iQuantity * iPrice;
+					objective += iQuantity * iPrice;
 					planTable[iNode][h] = iQuantity;
 					isSatisfy[i] -= iQuantity;
 				}
 			}
 		}
 		if (isSatisfy[h]) {  // tour中的节点无法满足购买需求
-			return -1.0;
+			return -1;
 		}
 		h++;
 	}
@@ -117,7 +117,7 @@ double CAHImprovement::newPurchasePlan(
 	return objective;
 }
 
-double CAHImprovement::newTravelRoute(
+int CAHImprovement::newTravelRoute(
 	int index, std::string method, 
 	std::vector<int>& tour, 
 	const std::vector<std::vector<int>>& distance_matrix
@@ -140,9 +140,9 @@ double CAHImprovement::newTravelRoute(
 		tour.insert(tour.begin() + indexToInsert, index);
 	}
 
-	double routeCost = 0.0;
+	int routeCost = 0;
 	for (int j = 0; j < tour.size() - 1; j++) 
-		routeCost += 1.0 * distance_matrix[tour[j]][tour[j + 1]];
+		routeCost += distance_matrix[tour[j]][tour[j + 1]];
 
 	return routeCost;
 }

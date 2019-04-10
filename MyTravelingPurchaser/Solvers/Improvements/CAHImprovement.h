@@ -12,14 +12,14 @@ public:
 		Solutions &previous_solutions
 	) override;
 
-	double newPurchasePlan(
+	int newPurchasePlan(
 		const std::vector<int> &tour,
 		const std::vector<int> &demands,
 		const std::vector<std::vector<NodePriQua>> &offer_sort_lists,
 		std::vector<std::vector<int>> &planTable
 	);
 
-	double newTravelRoute(
+	int newTravelRoute(
 		int index,
 		std::string method, 
 		std::vector<int> &tour,

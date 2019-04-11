@@ -11,12 +11,12 @@ public:
 	static void dispatch(std::string filename, std::vector<std::string> methods) {
 		
 		auto instance = TPPLIBInstanceBuilder::buildFromFile(filename);
-		Solutions mySolutions;
 
 		/* Construction */
+		Solutions initSolutions;
 		if (methods[0] == "CAH") {
 			CAHSolver cah_sol = CAHSolver();
-			mySolutions = cah_sol.construct(
+			initSolutions = cah_sol.construct(
 				instance->dimension,
 				instance->demands,
 				instance->offer_lists,
@@ -25,7 +25,7 @@ public:
 		}
 		else if (methods[0] == "GRB") {
 			GurobiSolver grb_sol = GurobiSolver();
-			mySolutions = grb_sol.construct(
+			initSolutions = grb_sol.construct(
 				instance->dimension,
 				instance->demands,
 				instance->offer_lists,
@@ -33,28 +33,28 @@ public:
 			);
 		}
 		std::cout << "***Construction***" << std::endl;
-		solutionsPrinter(mySolutions);
 
 		/* Improvement */
-		//for (int i = 1; i < methods.size(); ++i) {
-		//	if (methods[i] == "CAHImprove") {
-		//		CAHImprovement cah_improve_sol = CAHImprovement();
-		//		mySolutions = cah_improve_sol.improve(
-		//			instance->dimension,
-		//			instance->demands,
-		//			instance->offer_lists,
-		//			instance->offer_sort_lists,
-		//			instance->distance_matrix,
-		//			mySolutions
-		//		);
-		//	}
-		//	std::cout << "***CAH-Improvement***" <<  std::endl;
-		//	solutionsPrinter(mySolutions);
-		//}
-
+		Solutions iprvSolutions;
+		if (methods[1] == "CAHImprove") {
+			CAHImprovement cah_improve_sol = CAHImprovement();
+			for (auto initSln : initSolutions) {
+				iprvSolutions = cah_improve_sol.improve(
+					instance->dimension,
+					instance->demands,
+					instance->offer_lists,
+					instance->offer_sort_lists,
+					instance->distance_matrix,
+					initSln
+				);
+			}
+		}
+		std::cout << "***Improvement***" <<  std::endl;
+		
 		/* Checker */
+		Solutions &chkSolutions = iprvSolutions;
 		MyTPPChecker tpp_checker = MyTPPChecker();
-		for (auto sln : mySolutions) {
+		for (auto sln : chkSolutions) {
 			tpp_checker.myTppChecker(
 				sln, instance->dimension,
 				instance->demands,
@@ -63,6 +63,9 @@ public:
 			);
 		}
 		
+		/* Printer */
+		//solutionsPrinter(mySolutions);
+
 		/* Visualizer */
 		//auto t = solutions->at(0);
 		//MatlabVisualizer::visualize(instance, t->first);

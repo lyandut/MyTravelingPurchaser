@@ -5,25 +5,25 @@ class CAHImprovement : public ImprovementHeuristic {
 public:
 	Solutions improve(
 		unsigned int dimension,
-		const std::vector<int> &demands,
-		const std::vector<std::vector<PriQua>> &offer_lists,
+		const lyan::DemmandList& demands,
+		const lyan::OfferList& offer_lists,
 		const std::vector<std::vector<NodePriQua>> &offer_sort_lists,
-		const std::vector<std::vector<int>> &distance_matrix,
-		Solutions &previous_solutions
+		const lyan::DisMatrix& distance_matrix,
+		Solution & hisSolution
 	) override;
 
 	int newPurchasePlan(
-		const std::vector<int> &tour,
-		const std::vector<int> &demands,
+		const lyan::Tour &tour,
+		const lyan::DemmandList &demands,
 		const std::vector<std::vector<NodePriQua>> &offer_sort_lists,
-		std::vector<std::vector<int>> &planTable
+		lyan::PlanTable &planTable
 	);
 
 	int newTravelRoute(
-		int index,
+		int nodeId,
 		std::string method, 
-		std::vector<int> &tour,
-		const std::vector<std::vector<int>>& distance_matrix
+		lyan::Tour &tour,
+		const lyan::DisMatrix &distance_matrix
 	);
 };
 

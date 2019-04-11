@@ -14,8 +14,8 @@ void run() {
 
 	std::string file = std::string(FOLDER) + CLASE + INSTANCENAME;
 	auto methods = std::vector<std::string>();
-	//methods.emplace_back("CAH");
-	methods.emplace_back("GRB");
+	methods.emplace_back("CAH");
+	//methods.emplace_back("GRB");
 	methods.emplace_back("CAHImprove");
 
 	SolverDispatcher::dispatch(file, methods);

@@ -8,13 +8,13 @@ bool MyTPPChecker::myTppChecker(Solution & sln, unsigned int dimension, const st
 	int routeCost = 0;
 	int purchaseCost = 0;
 
-	Log(LogSwitch::Szx::Checker) << "***Check Begin***" << std::endl;
+	Log(LogSwitch::Szx::Checker) << std::endl << "***Checker Begin***" << std::endl;
 
 #pragma region TourCheck
 	Log(LogSwitch::Szx::Checker) << "===Tour Check===" << std::endl;
 	int tourSize = sln.tour.size() - 1;    // ÆðÖ¹µã = 0
 	if (tourSize > dimension && tourSize < 2) {
-		Log(LogSwitch::Szx::Checker) << "Error: Tour Size=" << tourSize << "\tDimension=" << dimension << std::endl;
+		Log(LogSwitch::Szx::Checker) << "Error: Tour Size = " << tourSize << "\tDimension = " << dimension << std::endl;
 		return false;
 	}
 	auto iterBegin = sln.tour.begin(), iterEnd = sln.tour.end();
@@ -24,13 +24,14 @@ bool MyTPPChecker::myTppChecker(Solution & sln, unsigned int dimension, const st
 	}
 	for (int i = 0; i < tourSize; i++) {
 		if (count(iterBegin, iterEnd - 1, sln.tour[i]) != 1) {
-			Log(LogSwitch::Szx::Checker) << "Error: Node duplication=" << sln.tour[i] << std::endl;
+			Log(LogSwitch::Szx::Checker) << "Error: Node duplication = " << sln.tour[i] << std::endl;
 			return false;
 		}
 		Log(LogSwitch::Szx::Checker) << sln.tour[i] << '\t';
 		routeCost += distance_matrix[sln.tour[i]][sln.tour[i + 1]];
 	}
 	Log(LogSwitch::Szx::Checker) << sln.tour[tourSize] << std::endl;
+	Log(LogSwitch::Szx::Checker) << "Tour Size = " << tourSize << std::endl;
 #pragma endregion TourCheck
 
 #pragma region PurchaseCheck
@@ -43,7 +44,7 @@ bool MyTPPChecker::myTppChecker(Solution & sln, unsigned int dimension, const st
 			if (sln.planTable[i][k] > iQuantity) {
 				Log(LogSwitch::Szx::Checker) << "Error: Purchases is more than Availability. ";
 				Log(LogSwitch::Szx::Checker) << "Node: " << i << " Product: " << k << std::endl;
-				Log(LogSwitch::Szx::Checker) << "Purchases=" << sln.planTable[i][k] << " Availability=" << iQuantity << std::endl;
+				Log(LogSwitch::Szx::Checker) << "Purchases = " << sln.planTable[i][k] << " Availability = " << iQuantity << std::endl;
 				return false;
 			}
 			sumPurCost += sln.planTable[i][k];
@@ -51,7 +52,7 @@ bool MyTPPChecker::myTppChecker(Solution & sln, unsigned int dimension, const st
 		}
 		if (sumPurCost < demands[k]) {
 			Log(LogSwitch::Szx::Checker) << "Error: Demand " << k << " is not satisfied." << std::endl;
-			Log(LogSwitch::Szx::Checker) << "sumPurCost=" << sumPurCost << " Demand="<< demands[k] << std::endl;
+			Log(LogSwitch::Szx::Checker) << "sumPurCost = " << sumPurCost << " Demand = "<< demands[k] << std::endl;
 			return false;
 		}
 	}
@@ -63,9 +64,9 @@ bool MyTPPChecker::myTppChecker(Solution & sln, unsigned int dimension, const st
 		Log(LogSwitch::Szx::Checker) << "Calculation Error!" << std::endl;
 		return false;
 	}
-	Log(LogSwitch::Szx::Checker) << "Opitimization=" << sln.opitimization << std::endl;
+	Log(LogSwitch::Szx::Checker) << "Opitimization = " << sln.opitimization << std::endl;
 #pragma endregion OptCheck
 
-	Log(LogSwitch::Szx::Checker) << "***Check Finish***" << std::endl;
+	Log(LogSwitch::Szx::Checker) << "***Checker Successful End***" << std::endl;
 	return true;
 }

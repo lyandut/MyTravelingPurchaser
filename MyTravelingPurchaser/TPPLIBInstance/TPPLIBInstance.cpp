@@ -309,7 +309,8 @@ TPPLIBInstance * TPPLIBInstanceBuilder::buildFromFile(std::string filename) {
 				for (int j = i + 1; j < n; ++j) {
 					double dx = instance->coordinates[i][0] - instance->coordinates[j][0];
 					double dy = instance->coordinates[i][1] - instance->coordinates[j][1];
-					int dist = std::lround(std::sqrt((dx * dx) + (dy * dy)));
+					//int dist = std::lround(std::sqrt((dx * dx) + (dy * dy)));
+					int dist = std::sqrt((dx * dx) + (dy * dy));  // truncated Euclidean distances
 					instance->distance_matrix[i][j] = dist;
 					instance->distance_matrix[j][i] = dist;
 				}

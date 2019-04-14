@@ -1,12 +1,13 @@
 #pragma once
-#include "../ConstructionHeuristic.h"
+#include "../../MyUtility/Solver.h"
 
-class GurobiSolver : public ConstructionHeuristic {
+class GurobiSolver {
 public:
-	Solutions construct(
+	Solutions construct( 
 		unsigned int dimension,
 		const std::vector<int>& demands,
 		const std::vector<std::vector<PriQua>>& offer_lists,
-		const std::vector<std::vector<int>>& distance_matrix
-	) override;
+		const std::vector<std::vector<int>>& distance_matrix,
+		szx::Solver::Environment &env
+	);
 };

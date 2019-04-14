@@ -10,9 +10,6 @@
     <Filter Include="Solvers\CAH">
       <UniqueIdentifier>{23cdbe14-9f7e-4bc2-b90b-266fd49105a1}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Solvers\Common Header Files">
-      <UniqueIdentifier>{cc201a03-f435-461c-b444-21b5dda39b76}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Solvers\Improvements">
       <UniqueIdentifier>{efcc07e3-4bf1-4fd8-a603-f69170ce1e53}</UniqueIdentifier>
     </Filter>
@@ -38,25 +35,34 @@
     <Filter Include="Checker">
       <UniqueIdentifier>{4a593f52-8f8c-4134-bd97-d1aa674c8cfe}</UniqueIdentifier>
     </Filter>
+    <Filter Include="MyUtility\Simulator">
+      <UniqueIdentifier>{fbac9e49-3eb6-4052-a138-462dbf36f3e3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="MyUtility\Header Files">
+      <UniqueIdentifier>{9aa1f899-15e6-4177-b298-e2109ec496a4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="MyUtility\Utility">
+      <UniqueIdentifier>{c33b5340-afee-49b8-b0f0-0de60e20f08a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Solvers\Header Files">
+      <UniqueIdentifier>{cc201a03-f435-461c-b444-21b5dda39b76}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Solvers\SolverDispatcher">
+      <UniqueIdentifier>{e82584aa-438d-4d69-8c06-53e88572eab6}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Solvers\SolverDispatcher.h">
-      <Filter>Solvers\Common Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Solvers\ConstructionHeuristic.h">
-      <Filter>Solvers\Common Header Files</Filter>
+      <Filter>Solvers\Header Files</Filter>
     </ClInclude>
     <ClInclude Include="TPPLIBInstance\TPPLIBInstance.h">
       <Filter>TPPLIBInstance</Filter>
     </ClInclude>
     <ClInclude Include="Solvers\ImprovementHeuristic.h">
-      <Filter>Solvers\Common Header Files</Filter>
+      <Filter>Solvers\Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Solvers\CAHSolver\CAHSolver.h">
       <Filter>Solvers\CAH</Filter>
-    </ClInclude>
-    <ClInclude Include="Solvers\Improvements\CAHImprovement.h">
-      <Filter>Solvers\Improvements</Filter>
     </ClInclude>
     <ClInclude Include="Solvers\GurobiSolver\GurobiSolver.h">
       <Filter>Solvers\Gurobi</Filter>
@@ -69,18 +75,6 @@
     </ClInclude>
     <ClInclude Include="MyUtility\MpSolverGurobi.h">
       <Filter>MyUtility\MpSolver</Filter>
-    </ClInclude>
-    <ClInclude Include="MyUtility\Common.h">
-      <Filter>MyUtility</Filter>
-    </ClInclude>
-    <ClInclude Include="MyUtility\Config.h">
-      <Filter>MyUtility</Filter>
-    </ClInclude>
-    <ClInclude Include="MyUtility\LogSwitch.h">
-      <Filter>MyUtility</Filter>
-    </ClInclude>
-    <ClInclude Include="MyUtility\Utility.h">
-      <Filter>MyUtility</Filter>
     </ClInclude>
     <ClInclude Include="..\Lib\LKH3\BIT.h">
       <Filter>TspLib\LKH3</Filter>
@@ -142,6 +136,39 @@
     <ClInclude Include="Checker\MyTPPChecker.h">
       <Filter>Checker</Filter>
     </ClInclude>
+    <ClInclude Include="MyUtility\Simulator.h">
+      <Filter>MyUtility\Simulator</Filter>
+    </ClInclude>
+    <ClInclude Include="MyUtility\Common.h">
+      <Filter>MyUtility\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="MyUtility\Config.h">
+      <Filter>MyUtility\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="MyUtility\LogSwitch.h">
+      <Filter>MyUtility\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="MyUtility\Problem.h">
+      <Filter>MyUtility\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="MyUtility\Solver.h">
+      <Filter>MyUtility\Simulator</Filter>
+    </ClInclude>
+    <ClInclude Include="MyUtility\Utility.h">
+      <Filter>MyUtility\Utility</Filter>
+    </ClInclude>
+    <ClInclude Include="MyUtility\ThreadPool.h">
+      <Filter>MyUtility\Simulator</Filter>
+    </ClInclude>
+    <ClInclude Include="MyUtility\CsvReader.h">
+      <Filter>MyUtility\Utility</Filter>
+    </ClInclude>
+    <ClInclude Include="Solvers\SolverDispatcher.h">
+      <Filter>Solvers\SolverDispatcher</Filter>
+    </ClInclude>
+    <ClInclude Include="Solvers\Improver\CAHImprovement.h">
+      <Filter>Solvers\Improvements</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="TPPLIBInstance\TPPLIBInstance.cpp">
@@ -150,17 +177,11 @@
     <ClCompile Include="Solvers\CAHSolver\CAHSolver.cpp">
       <Filter>Solvers\CAH</Filter>
     </ClCompile>
-    <ClCompile Include="Solvers\Improvements\CAHImprovement.cpp">
-      <Filter>Solvers\Improvements</Filter>
-    </ClCompile>
     <ClCompile Include="Solvers\GurobiSolver\GurobiSolver.cpp">
       <Filter>Solvers\Gurobi</Filter>
     </ClCompile>
     <ClCompile Include="MyUtility\MpSolverGurobi.cpp">
       <Filter>MyUtility\MpSolver</Filter>
-    </ClCompile>
-    <ClCompile Include="MyUtility\Utility.cpp">
-      <Filter>MyUtility</Filter>
     </ClCompile>
     <ClCompile Include="..\Lib\LKH3\_LKH.cpp">
       <Filter>TspLib\LKH3</Filter>
@@ -641,6 +662,24 @@
     </ClCompile>
     <ClCompile Include="Checker\MyTPPChecker.cpp">
       <Filter>Checker</Filter>
+    </ClCompile>
+    <ClCompile Include="MyUtility\Simulator.cpp">
+      <Filter>MyUtility\Simulator</Filter>
+    </ClCompile>
+    <ClCompile Include="MyUtility\Solver.cpp">
+      <Filter>MyUtility\Simulator</Filter>
+    </ClCompile>
+    <ClCompile Include="MyUtility\Utility.cpp">
+      <Filter>MyUtility\Utility</Filter>
+    </ClCompile>
+    <ClCompile Include="MyUtility\CsvReader.cpp">
+      <Filter>MyUtility\Utility</Filter>
+    </ClCompile>
+    <ClCompile Include="Solvers\SolverDispatcher.cpp">
+      <Filter>Solvers\SolverDispatcher</Filter>
+    </ClCompile>
+    <ClCompile Include="Solvers\Improver\CAHImprovement.cpp">
+      <Filter>Solvers\Improvements</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

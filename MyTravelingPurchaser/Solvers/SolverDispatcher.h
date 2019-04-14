@@ -2,76 +2,15 @@
 #include "../TPPLIBInstance/TPPLIBInstance.h"
 #include "./CAHSolver/CAHSolver.h"
 #include "./GurobiSolver/GurobiSolver.h"
-#include "./Improvements/CAHImprovement.h"
+#include "./Improver/CAHImprovement.h"
 #include "../Checker/MyTPPChecker.h"
+#include "../MyUtility/Solver.h"
 
 
 class SolverDispatcher {
 public:
-	static void dispatch(std::string filename, std::vector<std::string> methods) {
-		
-		auto instance = TPPLIBInstanceBuilder::buildFromFile(filename);
-
-		/* Construction */
-		Solutions initSolutions;
-		if (methods[0] == "CAH") {
-			CAHSolver cah_sol = CAHSolver();
-			initSolutions = cah_sol.construct(
-				instance->dimension,
-				instance->demands,
-				instance->offer_lists,
-				instance->distance_matrix
-			);
-		}
-		else if (methods[0] == "GRB") {
-			GurobiSolver grb_sol = GurobiSolver();
-			initSolutions = grb_sol.construct(
-				instance->dimension,
-				instance->demands,
-				instance->offer_lists,
-				instance->distance_matrix
-			);
-		}
-		std::cout << "***Construction***" << std::endl;
-
-		/* Improvement */
-		Solutions iprvSolutions;
-		if (methods[1] == "CAHImprove") {
-			CAHImprovement cah_improve_sol = CAHImprovement();
-			for (auto initSln : initSolutions) {
-				iprvSolutions = cah_improve_sol.improve(
-					instance->dimension,
-					instance->demands,
-					instance->offer_lists,
-					instance->offer_sort_lists,
-					instance->distance_matrix,
-					initSln
-				);
-			}
-		}
-		std::cout << "***Improvement***" <<  std::endl;
-		
-		/* Checker */
-		Solutions &chkSolutions = iprvSolutions;
-		MyTPPChecker tpp_checker = MyTPPChecker();
-		for (auto sln : chkSolutions) {
-			tpp_checker.myTppChecker(
-				sln, instance->dimension,
-				instance->demands,
-				instance->offer_lists,
-				instance->distance_matrix
-			);
-		}
-		
-		/* Printer */
-		//solutionsPrinter(mySolutions);
-
-		/* Visualizer */
-		//auto t = solutions->at(0);
-		//MatlabVisualizer::visualize(instance, t->first);
-
- 		delete instance;
-	}
+	static void dispatch(std::string filename, std::vector<std::string> methods);
+	static void iteratedModel(Solution &sln, TPPLIBInstance *instance, szx::Solver::Environment & env);
 
 	static void instancePrinter(TPPLIBInstance *instance) {
 		using std::cout; 

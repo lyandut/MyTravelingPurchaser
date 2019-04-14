@@ -18,11 +18,12 @@ Solutions GurobiSolver::construct(
 	unsigned int dimension,
 	const std::vector<int> &demands,
 	const std::vector<std::vector<PriQua>> &offer_lists,
-	const std::vector<std::vector<int>> &distance_matrix
+	const std::vector<std::vector<int>> &distance_matrix,
+	Solver::Environment &env
 ) {
 	int demandNum = demands.size();
 
-	MpSolver::Configuration mpCfg(MpSolver::InternalSolver::GurobiMip, timeoutInSecond, true, true);
+	MpSolver::Configuration mpCfg(MpSolver::InternalSolver::GurobiMip, env.timeoutInSecond(), true, true);
 	MpSolver mp(mpCfg);
 
 	/* Decision Variables
@@ -94,7 +95,7 @@ Solutions GurobiSolver::construct(
 		}
 	}
 	obj = routeCost + purchaseCost;
-	mp.addObjective(obj, MpSolver::OptimaOrientation::Minimize, 0, 0, 0, timeoutInSecond);
+	mp.addObjective(obj, MpSolver::OptimaOrientation::Minimize, 0, 0, 0, env.timeoutInSecond());
 
 	/* CallBack
 	 * 1. subTourHandler - 添加子回路惰性约束
@@ -155,7 +156,7 @@ Solutions GurobiSolver::construct(
 	
 	static const String TspCacheDir("TspCache/");
 	System::makeSureDirExist(TspCacheDir);
-	CachedTspSolver tspSolver(dimension, TspCacheDir + INSTANCENAME + ".csv");
+	CachedTspSolver tspSolver(dimension, TspCacheDir + env.friendlyInstName() + ".csv");
 	
 	Solution curSln; // current solution.
 	Solution bestSln; // history best solution.
@@ -188,7 +189,7 @@ Solutions GurobiSolver::construct(
 				if (!e.isTrue(x.at(n, m))) { continue; }
 				nodeIdMap[coords.size()] = n;
 				containNode[n] = true;
-				// OPTIMIZE[lyan][1]: fix Coord2D input
+				// OPTIMIZE[lyan][0]: fix Coord2D input
 				//coords.push_back(lkh::Coord2D(nodes[n].x() * Precision, nodes[n].y() * Precision));
 				visited = true;
 				break;
@@ -336,7 +337,7 @@ Solutions GurobiSolver::construct(
 	}	
 
 	Solutions result;
-	result.emplace_back(MpSln);
 	result.emplace_back(bestSln);
+	result.emplace_back(MpSln);
 	return result;
 }

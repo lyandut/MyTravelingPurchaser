@@ -5,6 +5,8 @@
 /// note  : 1.	tag macros with [on/off] to indicate prefered state.
 ////////////////////////////////
 
+#include "../Main/TPPConfig.h"
+
 #ifndef SMART_SZX_INVENTORY_ROUTING_CONFIG_H
 #define SMART_SZX_INVENTORY_ROUTING_CONFIG_H
 

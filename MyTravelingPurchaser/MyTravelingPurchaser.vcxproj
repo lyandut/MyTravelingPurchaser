@@ -185,6 +185,9 @@
     <ClInclude Include="..\Lib\LKH3\LKH.h" />
     <ClInclude Include="..\Lib\LKH3\Segment.h" />
     <ClInclude Include="..\Lib\LKH3\Sequence.h" />
+    <ClInclude Include="MyUtility\CsvReader.h" />
+    <ClInclude Include="MyUtility\Problem.h" />
+    <ClInclude Include="MyUtility\Simulator.h" />
     <ClInclude Include="Main\TPPCommon.h" />
     <ClInclude Include="Main\TPPConfig.h" />
     <ClInclude Include="Checker\MyTPPChecker.h" />
@@ -194,9 +197,11 @@
     <ClInclude Include="MyUtility\MpSolver.h" />
     <ClInclude Include="MyUtility\MpSolverBase.h" />
     <ClInclude Include="MyUtility\MpSolverGurobi.h" />
+    <ClInclude Include="MyUtility\Solver.h" />
+    <ClInclude Include="MyUtility\ThreadPool.h" />
     <ClInclude Include="MyUtility\Utility.h" />
     <ClInclude Include="Solvers\GurobiSolver\GurobiSolver.h" />
-    <ClInclude Include="Solvers\Improvements\CAHImprovement.h" />
+    <ClInclude Include="Solvers\Improver\CAHImprovement.h" />
     <ClInclude Include="Solvers\CAHSolver\CAHSolver.h" />
     <ClInclude Include="Solvers\ConstructionHeuristic.h" />
     <ClInclude Include="Solvers\ImprovementHeuristic.h" />
@@ -364,11 +369,15 @@
     <ClCompile Include="..\Lib\LKH3\_LKH.cpp" />
     <ClCompile Include="Main\main.cpp" />
     <ClCompile Include="Checker\MyTPPChecker.cpp" />
+    <ClCompile Include="MyUtility\CsvReader.cpp" />
+    <ClCompile Include="MyUtility\Simulator.cpp" />
     <ClCompile Include="MyUtility\MpSolverGurobi.cpp" />
+    <ClCompile Include="MyUtility\Solver.cpp" />
     <ClCompile Include="MyUtility\Utility.cpp" />
     <ClCompile Include="Solvers\GurobiSolver\GurobiSolver.cpp" />
-    <ClCompile Include="Solvers\Improvements\CAHImprovement.cpp" />
+    <ClCompile Include="Solvers\Improver\CAHImprovement.cpp" />
     <ClCompile Include="Solvers\CAHSolver\CAHSolver.cpp" />
+    <ClCompile Include="Solvers\SolverDispatcher.cpp" />
     <ClCompile Include="TPPLIBInstance\TPPLIBInstance.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

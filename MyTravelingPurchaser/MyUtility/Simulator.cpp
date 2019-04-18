@@ -17,8 +17,7 @@ using namespace std;
 namespace szx {
 
 // EXTEND[szx][5]: read it from InstanceList.txt.
-static const vector<String> &instList = CapEucInstList;
-//static const vector<String> &instList = EEucInstList;
+static const vector<String> &instList =  INSTANCESET == "CapEuclideo" ? CapEucInstList : EEucInstList;
 
 void Simulator::initDefaultEnvironment() {
     Solver::Environment env;
@@ -101,8 +100,8 @@ void Simulator::run(const String &envPath) {
 void Simulator::debug() {
     Task task;
     task.instSet = INSTANCESET;
-    task.instId = "50.50.1.1";
-    task.randSeed = "1500972793";
+    task.instId = INSTANCEID;
+    task.randSeed = to_string(RANDSEED);
     //task.randSeed = to_string(RandSeed::generate());
     task.timeout = to_string(TIMEOUTINSECOND);
     //task.maxIter = "1000000000";

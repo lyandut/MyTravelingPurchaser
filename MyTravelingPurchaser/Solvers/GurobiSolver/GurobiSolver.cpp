@@ -7,7 +7,6 @@
 #include "LKH3Lib/CachedTspSolver.h"
 #include "../../MyUtility/MpSolver.h"
 #include "../../MyUtility/LogSwitch.h"
-#include "../../Main/TPPConfig.h"
 
 using namespace szx;
 
@@ -291,16 +290,9 @@ Solutions GurobiSolver::construct(
 	/* CallBack
 	 * 4. combineHandler
  	 */
-	int flag = 0;
 	auto combineHandler = [&](MpSolver::MpEvent &e) {
-		if (flag % 2) { // Odd
-			nodeSetHandlerWithAdjMat(e);
-			subTourHandler(e);
-		}
-		else { // Even
-			subTourHandler(e);
-			nodeSetHandlerWithAdjMat(e);
-		}
+		subTourHandler(e);
+		nodeSetHandlerWithAdjMat(e);
 	};
 
 	//mp.setMipSlnEvent(subTourHandler);

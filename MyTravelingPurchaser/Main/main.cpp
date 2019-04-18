@@ -15,11 +15,12 @@ void simulate() {
 }
 
 void myRun() {
-	std::string file = std::string(FOLDER) + CLASE + INSTANCENAME;
+	std::string file = szx::Solver::Environment::DefaultInstanceDir() + INSTANCESET + "." + INSTANCEID + ".tpp";
 	auto methods = std::vector<std::string>();
 	//methods.emplace_back("CAH");
 	methods.emplace_back("GRB");
-	methods.emplace_back("CAHImprove");
+	//methods.emplace_back("CAHImprove");
+	methods.emplace_back("Perturbation");
 
 	SolverDispatcher::dispatch(file, methods);
 }

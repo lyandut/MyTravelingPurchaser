@@ -157,6 +157,7 @@
       <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions);_CRT_SECURE_NO_WARNINGS</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
       <AdditionalIncludeDirectories>$(SolutionDir)Lib;$(SolutionDir)Lib\gurobi\include;$(SolutionDir)Lib\LKH3Lib;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -164,7 +165,7 @@
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalLibraryDirectories>$(SolutionDir)Lib\gurobi\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>gurobi80.lib;gurobi_c++mdd2015.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>gurobi80.lib;gurobi_c++mt2015.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
@@ -200,6 +201,7 @@
     <ClInclude Include="MyUtility\Solver.h" />
     <ClInclude Include="MyUtility\ThreadPool.h" />
     <ClInclude Include="MyUtility\Utility.h" />
+    <ClInclude Include="Solvers\Improver\Perturbation.h" />
     <ClInclude Include="Solvers\GurobiSolver\GurobiSolver.h" />
     <ClInclude Include="Solvers\Improver\CAHImprovement.h" />
     <ClInclude Include="Solvers\CAHSolver\CAHSolver.h" />
@@ -374,6 +376,7 @@
     <ClCompile Include="MyUtility\MpSolverGurobi.cpp" />
     <ClCompile Include="MyUtility\Solver.cpp" />
     <ClCompile Include="MyUtility\Utility.cpp" />
+    <ClCompile Include="Solvers\Improver\Perturbation.cpp" />
     <ClCompile Include="Solvers\GurobiSolver\GurobiSolver.cpp" />
     <ClCompile Include="Solvers\Improver\CAHImprovement.cpp" />
     <ClCompile Include="Solvers\CAHSolver\CAHSolver.cpp" />

@@ -3,12 +3,15 @@
 #include "./CAHSolver/CAHSolver.h"
 #include "./GurobiSolver/GurobiSolver.h"
 #include "./Improver/CAHImprovement.h"
+#include "./Improver/Perturbation.h"
 #include "../Checker/MyTPPChecker.h"
 #include "../MyUtility/Solver.h"
 
 
 class SolverDispatcher {
 public:
+	static szx::Solver::Environment env;
+
 	static void dispatch(std::string filename, std::vector<std::string> methods);
 	static void iteratedModel(Solution &sln, TPPLIBInstance *instance, szx::Solver::Environment & env);
 

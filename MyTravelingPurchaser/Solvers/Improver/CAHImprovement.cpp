@@ -6,12 +6,47 @@ Solutions CAHImprovement::improve(
 	const lyan::OfferList& offer_lists,
 	const std::vector<std::vector<NodePriQua>> &offer_sort_lists,
 	const lyan::DisMatrix& distance_matrix,
-	Solution & hisSolution
+	Solution & hisSolution,
+	szx::Solver::Environment &env
 ) {
 	Solutions result;  // result to return
-	result.emplace_back(hisSolution);
 
 	/* Market drop */
+	Solution dropSolution = marketDrop(dimension, demands, offer_sort_lists, distance_matrix, hisSolution);
+	result.emplace_back(dropSolution);
+	hisSolution = dropSolution;
+
+	
+	/* Market add */
+	Solution addSolution = marketDrop(dimension, demands, offer_sort_lists, distance_matrix, hisSolution);
+	result.emplace_back(addSolution);
+	hisSolution = addSolution;
+
+	/* Market exchange */
+	int tabuIter = 0;
+	alphaTabuTable = std::vector<int>(dimension, -1);
+	betaTabuTable = std::vector<int>(dimension, -1);
+	szx::Random rand(env.randSeed);
+	while (tabuIter != STOPCONDITION) {
+		hisSolution = marketExchange(
+			dimension, demands, offer_sort_lists, distance_matrix, hisSolution, tabuIter, rand
+		);
+		++tabuIter;
+	}
+
+	/* TSP heuristic */
+
+	
+	return result;
+}
+
+Solution CAHImprovement::marketDrop(
+	unsigned int dimension,
+	const lyan::DemmandList& demands,
+	const std::vector<std::vector<NodePriQua>> &offer_sort_lists,
+	const lyan::DisMatrix& distance_matrix,
+	const Solution & hisSolution
+) {
 	Solution dropSolution = hisSolution;
 	for (int i = 1; i < hisSolution.tour.size() - 1; i++) {
 		int dropNode = hisSolution.tour[i];
@@ -28,11 +63,16 @@ Solutions CAHImprovement::improve(
 			dropSolution = { newObjective, newTour, newPlanTable };
 		}
 	}
-	
-	result.emplace_back(dropSolution);
-	hisSolution = dropSolution;
-	
-	/* Market add */
+	return dropSolution;
+}
+
+Solution CAHImprovement::marketAdd(
+	unsigned int dimension, 
+	const lyan::DemmandList & demands, 
+	const std::vector<std::vector<NodePriQua>>& offer_sort_lists, 
+	const lyan::DisMatrix & distance_matrix, 
+	const Solution & hisSolution
+) {
 	Solution addSolution = hisSolution;
 	for (int i = 0; i < dimension; i++) {
 		auto hisIter = find(hisSolution.tour.begin(), hisSolution.tour.end(), i);
@@ -67,18 +107,110 @@ Solutions CAHImprovement::improve(
 			addSolution = { newObjective, newTour, newPlanTable };
 		}
 	}
+	return addSolution;
+}
 
-	result.emplace_back(addSolution);
-	hisSolution = addSolution;
+Solution CAHImprovement::marketExchange(
+	unsigned int dimension, 
+	const lyan::DemmandList & demands, 
+	const std::vector<std::vector<NodePriQua>>& offer_sort_lists, 
+	const lyan::DisMatrix & distance_matrix, 
+	const Solution & hisSolution,
+	int tabuIter,
+	szx::Random rand
+) {
+	// generate all of the exchange pairs.
+	lyan::ExcPairList allExcPair;
+	for (int i = 1; i < hisSolution.tour.size() - 1; i++) {
+		int dropNode = hisSolution.tour[i];
+		for (int j = 0; j < dimension; j++) {
+			int addNode = j;
+			auto hisIter = find(hisSolution.tour.begin(), hisSolution.tour.end(), addNode);
+			if (hisIter != hisSolution.tour.end()) { continue; }
+			allExcPair.emplace_back(dropNode, addNode);
+		}
+	}
+	// traverse all of the exchange pairs.
+	Solutions L, tabuL;
+	Solution excSolution = hisSolution, tabuExcSolution = hisSolution;
+	lyan::ExcPairList excPair, tabuExcPair;
+	for (lyan::ExcPair eachPair : allExcPair) {
+		int dropNode = eachPair.first;
+		int addNode = eachPair.second;
+		auto newTour = hisSolution.tour;
+		// route cost: node drop
+		int newRouteCost = newTravelRoute(dropNode, "DROP", newTour, distance_matrix);
+		// route cost: node add
+		newRouteCost = newTravelRoute(addNode, "ADD", newTour, distance_matrix);
+		// purchase cost
+		lyan::PlanTable newPlanTable(dimension, lyan::OfferTable(demands.size(), 0));
+		int newPurchaseCost = newPurchasePlan(newTour, demands, offer_sort_lists, newPlanTable);
+		if (newPurchaseCost < 0) continue;
+		// route cost: node drop
+		// Drop from the solution all markets where no purchase is made.
+		std::vector<int> indexToDel;
+		for (auto iter = newTour.begin() + 1; iter != newTour.end() - 1; iter++) {
+			int h;
+			for (h = 0; h < demands.size(); h++) {
+				if (newPlanTable[*iter][h])
+					break;
+			}
+			if (h == demands.size()) {
+				indexToDel.emplace_back(*iter);
+			}
+		}
+		for (auto each : indexToDel) {
+			newRouteCost = newTravelRoute(each, "DROP", newTour, distance_matrix);
+		}
+		// total cost
+		int newObjective = newRouteCost + newPurchaseCost;
 
-	/* Market exchange */
-	Solution ExcSolution = hisSolution;
-
-
-	/* TSP heuristic */
-
-	
-	return result;
+		// 禁忌策略
+		if (alphaTabuTable[addNode] <= tabuIter && betaTabuTable[dropNode] <= tabuIter) { /* 解禁 */
+			if (newObjective < excSolution.opitimization) {
+				excSolution = { newObjective, newTour, newPlanTable };
+				L.clear();	excPair.clear();
+				L.emplace_back(excSolution);
+				excPair.emplace_back(eachPair);
+			}
+			else if (newObjective == excSolution.opitimization) {
+				L.emplace_back(newObjective, newTour, newPlanTable);
+				excPair.emplace_back(eachPair);
+			}
+		}
+		else { /* 禁忌 */
+			if (newObjective < tabuExcSolution.opitimization) {
+				tabuExcSolution = { newObjective, newTour, newPlanTable };
+				tabuL.clear();	tabuExcPair.clear();
+				tabuL.emplace_back(tabuExcSolution);
+				tabuExcPair.emplace_back(eachPair);
+			}
+			else if (newObjective == tabuExcSolution.opitimization) {
+				tabuL.emplace_back(newObjective, newTour, newPlanTable);
+				tabuExcPair.emplace_back(eachPair);
+			}
+		}
+	}
+	// 从最优解中随机返回一个，并将其属性禁忌
+	if (!tabuL.size() && !L.size()) { return hisSolution; }
+	int randIndex, dropNode, addNode;
+	Solution resSolution;
+	if (tabuL.size() && tabuExcSolution.opitimization < excSolution.opitimization || !L.size()) { // 特赦规则
+		randIndex = rand.pick(tabuL.size());
+		dropNode = tabuExcPair[randIndex].first;
+		addNode = tabuExcPair[randIndex].second;
+		resSolution = tabuL[randIndex];
+	}
+	else {
+		int randIndex = rand.pick(L.size());
+		int dropNode = excPair[randIndex].first;
+		int addNode = excPair[randIndex].second;
+		resSolution = L[randIndex];
+	}
+	int tourSize = resSolution.tour.size();
+	alphaTabuTable[addNode] = ALPHATABUTENURE;
+	betaTabuTable[dropNode] = BETATABUTENURE;
+	return resSolution;
 }
 
 int CAHImprovement::newPurchasePlan(

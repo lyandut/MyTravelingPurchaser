@@ -10,9 +10,6 @@
     <Filter Include="Solvers\CAH">
       <UniqueIdentifier>{23cdbe14-9f7e-4bc2-b90b-266fd49105a1}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Solvers\Improvements">
-      <UniqueIdentifier>{efcc07e3-4bf1-4fd8-a603-f69170ce1e53}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Solvers\Gurobi">
       <UniqueIdentifier>{bd145c8f-9963-424a-a63a-a5047b940e19}</UniqueIdentifier>
     </Filter>
@@ -49,6 +46,9 @@
     </Filter>
     <Filter Include="Solvers\SolverDispatcher">
       <UniqueIdentifier>{e82584aa-438d-4d69-8c06-53e88572eab6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Solvers\Improver">
+      <UniqueIdentifier>{efcc07e3-4bf1-4fd8-a603-f69170ce1e53}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -167,7 +167,10 @@
       <Filter>Solvers\SolverDispatcher</Filter>
     </ClInclude>
     <ClInclude Include="Solvers\Improver\CAHImprovement.h">
-      <Filter>Solvers\Improvements</Filter>
+      <Filter>Solvers\Improver</Filter>
+    </ClInclude>
+    <ClInclude Include="Solvers\Improver\Perturbation.h">
+      <Filter>Solvers\Improver</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -679,7 +682,10 @@
       <Filter>Solvers\SolverDispatcher</Filter>
     </ClCompile>
     <ClCompile Include="Solvers\Improver\CAHImprovement.cpp">
-      <Filter>Solvers\Improvements</Filter>
+      <Filter>Solvers\Improver</Filter>
+    </ClCompile>
+    <ClCompile Include="Solvers\Improver\Perturbation.cpp">
+      <Filter>Solvers\Improver</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

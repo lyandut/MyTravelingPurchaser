@@ -5,7 +5,8 @@ Solutions CAHSolver::construct(
 	unsigned int dimension,
 	const std::vector<int> &demands,
 	const std::vector<std::vector<PriQua>> &offer_lists,
-	const std::vector<std::vector<int>> &distance_matrix
+	const std::vector<std::vector<int>> &distance_matrix,
+	szx::Solver::Environment &env
 ) {
 	int objective = 0;
 	auto isSatisfy = demands;

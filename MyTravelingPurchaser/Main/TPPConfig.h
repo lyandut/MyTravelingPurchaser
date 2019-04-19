@@ -3,11 +3,11 @@
 #include <vector>
 #include <string>
 
-#pragma region InstanceCfg
+#pragma region TestCfg
 #define INSTANCEDIR "..\\Instance\\"
 #define CLASE "Clase4"
 #define INSTANCENAME "CapEuclideo.50.50.1.1.tpp"
-#pragma endregion InstanceCfg
+#pragma endregion TestCfg
 
 #pragma region TabuCfg
 #define STOPCONDITION 500
@@ -20,8 +20,8 @@
 #pragma region SimulatorCfg
 // Environment info
 #define INSTANCESET "CapEuclideo"
-#define INSTANCEID "150.50.1.5"
-#define RANDSEED 1555522935
+#define INSTANCEID "50.50.99.2"
+#define RANDSEED 1555622258
 #define TIMEOUTINSECOND 600
 // instance list
 static std::vector<std::string> EEucInstList({

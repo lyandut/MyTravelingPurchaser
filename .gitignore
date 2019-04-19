@@ -3,6 +3,8 @@
 
 Instance/
 Lib/gurobi/lib
+Deploy/TspCache/*
+Deploy/*.exe
 
 # User-specific files
 *.suo

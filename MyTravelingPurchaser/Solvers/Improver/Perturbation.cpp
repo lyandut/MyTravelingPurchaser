@@ -1,10 +1,14 @@
 #include "Perturbation.h"
+//#include "../../Checker/MyTPPChecker.h"
 
 void Perturbation::improve() {
+	//MyTPPChecker tpp_checker = MyTPPChecker();
+
 	/* tabu search */
 	while (tabuIter != STOPCONDITION) {
-		std::map<int, Pair<int, int>> deltaMap;
-		std::map<int, Pair<int, int>> tabuDeltaMap;
+		//tpp_checker.myTppChecker(sln, dimension, demands, offer_lists, distance_matrix);
+		std::map<int, int> deltaMap;
+		std::map<int, int> tabuDeltaMap;
 		for (int i = 1; i < dimension; i++) {
 			/* Market drop */
 			if (isTravelled[i]) {
@@ -26,11 +30,11 @@ void Perturbation::improve() {
 			}
 		}
 		/* sort the deltaMap */
-		std::vector<Pair<int, Pair<int, int>>> vec = mapSortByValue(deltaMap);
-		std::vector<Pair<int, Pair<int, int>>> tabuVec = mapSortByValue(tabuDeltaMap);
+		std::vector<Pair<int, int>> vec = mapSortByValue(deltaMap);
+		std::vector<Pair<int, int>> tabuVec = mapSortByValue(tabuDeltaMap);
 
 		/* TSP heuristic */
-		// 探测结果前30%用LKH修复求精确路由
+		// 探测结果前10%用LKH修复求精确路由
 		std::map<ID, Solution> results;
 		if (vec.empty()) {
 			int len = tabuVec.size() * 0.1;
@@ -73,19 +77,13 @@ void Perturbation::improve() {
 	}
 }
 
-bool Perturbation::marketDrop(int dropNode, std::map<int, Pair<int, int>> &costDelta) {
+bool Perturbation::marketDrop(int dropNode, std::map<int, int> &costDelta) {
 	int routeDelta = 0, purDelta = 0;
-	// Route delta
-	auto dropIter = find(sln.tour.begin(), sln.tour.end(), dropNode);
-	int front = *(dropIter - 1);
-	int behind = *(dropIter + 1);
-	routeDelta = distance_matrix[front][behind] - distance_matrix[front][dropNode] - distance_matrix[dropNode][behind];
 	// Purchase delta
 	std::vector<int> dropProduct;
 	for (int k = 0; k < sln.planTable[dropNode].size(); k++) {
-		int dropDemand = sln.planTable[dropNode][k];
-		if (!dropDemand) { continue; }
-		if (totalQuantity[k] - dropDemand < demands[k]) { return false; }
+		if (!sln.planTable[dropNode][k]) { continue; }
+		if (totalQuantity[k] - offer_lists[dropNode][k].second < demands[k]) { return false; }
 		dropProduct.push_back(k);
 	}
 	for (int k : dropProduct) {
@@ -105,15 +103,20 @@ bool Perturbation::marketDrop(int dropNode, std::map<int, Pair<int, int>> &costD
 				purDelta += iQuantity * iPrice;
 				dropDemand -= iQuantity;
 			}
+			if (!dropDemand) { break; }
 		}
 	}
+	// Route delta
+	auto dropIter = find(sln.tour.begin(), sln.tour.end(), dropNode);
+	int front = *(dropIter - 1);
+	int behind = *(dropIter + 1);
+	routeDelta = distance_matrix[front][behind] - distance_matrix[front][dropNode] - distance_matrix[dropNode][behind];
 
-	costDelta[dropNode].first = routeDelta + purDelta;  // 估算路由代价 + 精确购买开销
-	costDelta[dropNode].second = purDelta;
+	costDelta[dropNode] = routeDelta + purDelta;  // 估算路由代价 + 精确购买开销
 	return true;
 }
 
-bool Perturbation::marketAdd(int addNode, std::map<int, Pair<int, int>> &costDelta) {
+bool Perturbation::marketAdd(int addNode, std::map<int, int> &costDelta) {
 	int routeDelta = INT_MAX, purDelta = 0;
 	// Purchase delta
 	auto newTotalKind = totalProKinds;
@@ -124,8 +127,8 @@ bool Perturbation::marketAdd(int addNode, std::map<int, Pair<int, int>> &costDel
 		for (auto nodeInfo : descList[k]) {
 			int iNode = nodeInfo.nodeNo;
 			int iPrice = nodeInfo.price;
-			int iQuantity = sln.planTable[iNode][k];
 			if (iPrice <= addPrice) { break; }
+			int iQuantity = sln.planTable[iNode][k];
 			if (!iQuantity) { continue; }
 			// (iPrice > addPrice && iQuantity)
 			if (iQuantity <= addQuantity) { // 供大于求
@@ -139,7 +142,6 @@ bool Perturbation::marketAdd(int addNode, std::map<int, Pair<int, int>> &costDel
 				addQuantity = 0;
 				newTotalKind[addNode] += 1;
 			}
-			newTotalKind[addNode] += 1;
 			if (!addQuantity) { break; }
 		}
 	}
@@ -149,7 +151,7 @@ bool Perturbation::marketAdd(int addNode, std::map<int, Pair<int, int>> &costDel
 		int front = sln.tour[i], behind = sln.tour[i + 1];
 		int addRouteCost = distance_matrix[front][addNode] + distance_matrix[addNode][behind];
 		int subRouteCost = distance_matrix[front][behind];
-		if (routeDelta >(addRouteCost - subRouteCost)) {
+		if (routeDelta > (addRouteCost - subRouteCost)) {
 			routeDelta = addRouteCost - subRouteCost;
 		}
 	}
@@ -163,8 +165,7 @@ bool Perturbation::marketAdd(int addNode, std::map<int, Pair<int, int>> &costDel
 		}
 	}
 
-	costDelta[addNode].first = routeDelta + purDelta;  // 估算路由代价 + 精确购买开销
-	costDelta[addNode].second = purDelta;
+	costDelta[addNode] = routeDelta + purDelta;  // 估算路由代价 + 精确购买开销
 	return true;
 }
 

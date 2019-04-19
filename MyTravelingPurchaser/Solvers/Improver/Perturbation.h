@@ -13,7 +13,7 @@ using Pair = std::pair<keyType, valType>;
 template <typename keyType, typename valType>
 std::vector<Pair<keyType, valType>> mapSortByValue(std::map<keyType, valType>& Map) {
 	std::vector<Pair<keyType, valType>> vec(Map.begin(), Map.end());
-	sort(vec.begin(), vec.end(), [&](Pair<keyType, valType> x, Pair<keyType, valType> y) {return x.second < y.second; });
+	sort(vec.begin(), vec.end(), [&](Pair<keyType, valType> x, Pair<keyType, valType> y) { return x.second < y.second; });
 	return vec;
 }
 }
@@ -22,8 +22,8 @@ class Perturbation {
 public:
 #pragma region Method
 	void improve();
-	bool marketDrop(int dropNode, std::map<int, lyan::Pair<int, int>> &costDelta);
-	bool marketAdd(int addNode, std::map<int, lyan::Pair<int, int>> &costDelta);
+	bool marketDrop(int dropNode, std::map<int, int> &costDelta);
+	bool marketAdd(int addNode, std::map<int, int> &costDelta);
 	void tspHeuristic(std::vector<int> nodeIdMap, Solution &curSln);
 	void updatePlanTable(std::vector<int> newTourSet, Solution &curSln);
 	void makeMove(std::map<ID, Solution> &results);

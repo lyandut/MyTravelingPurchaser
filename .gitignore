@@ -3,7 +3,7 @@
 
 Instance/
 Lib/gurobi/lib
-Deploy/TspCache/*
+Deploy/TspCache/
 Deploy/*.exe
 
 # User-specific files
